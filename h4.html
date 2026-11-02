@@ -1,0 +1,642 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>مناقصة كأس العالم 2034 · الجولة الختامية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@500;700&family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap">
+<style>
+
+/* مسرح ثابت 1920×1080 يتمدد ليملأ أي شاشة. ملعب ليلي، وذهب الكأس للتمييز، ولكل فريق لونه */
+:root{
+  --bg:#08131f; --panel:#0f2133; --panel2:#152d45; --line:#24486a;
+  --fg:#eef3f8; --muted:#93abc2; --gold:#f0b84a; --ok:#3ccf86; --bad:#ef6450;
+  --t1:#4aa8ff; --t2:#3fd08a; --t3:#ff9a3c;
+  --display:"Reem Kufi","Tahoma",sans-serif;
+  --body:"IBM Plex Sans Arabic","Tahoma","Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--bg)}
+body{color:var(--fg);font-family:var(--body);-webkit-user-select:none;user-select:none}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+[hidden]{display:none!important}
+
+#stage{position:absolute;width:1920px;height:1080px;transform-origin:0 0;
+  background:radial-gradient(1200px 600px at 30% 0%,#173756 0,transparent 70%),radial-gradient(900px 500px at 100% 100%,#122a1f 0,transparent 70%),var(--bg);
+  font-size:26px;line-height:1.55;overflow:hidden}
+
+/* الرأس */
+.head{position:absolute;inset:0 0 auto 0;height:96px;display:flex;align-items:center;gap:28px;padding:0 36px;border-bottom:1px solid var(--line)}
+.brand{font-family:var(--display);font-size:38px;line-height:1.1;white-space:nowrap}
+.brand small{display:block;font-family:var(--body);font-size:18px;color:var(--muted)}
+.brand b{color:var(--gold)}
+.steps{flex:1;display:flex;gap:6px;align-items:center;justify-content:center;min-width:0}
+.steps span{height:8px;flex:1;max-width:90px;border-radius:4px;background:var(--line)}
+.steps span.done{background:var(--muted)}
+.steps span.on{background:var(--gold)}
+.scores{display:flex;gap:12px}
+.chip{display:flex;align-items:center;gap:10px;background:var(--panel);border:2px solid var(--c);border-radius:999px;padding:6px 18px;font-weight:700;font-size:22px;transition:transform .25s}
+.chip i{width:14px;height:14px;border-radius:50%;background:var(--c)}
+.chip .pts{font-family:var(--display);font-size:28px;color:var(--c);min-width:2.4ch;text-align:center;font-variant-numeric:tabular-nums}
+.chip.bump{transform:scale(1.12)}
+
+/* لوحة القصة */
+.story{position:absolute;top:116px;right:36px;width:740px;height:640px;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:30px 34px;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+.kick{display:flex;gap:10px;flex-wrap:wrap;font-size:18px;color:var(--muted)}
+.tag{border:1px solid var(--line);border-radius:999px;padding:2px 14px}
+.tag.obj{border-color:var(--gold);color:var(--gold)}
+.tag.branch{border-color:var(--bad);color:var(--bad)}
+.story h2{margin:0;font-family:var(--display);font-size:48px;line-height:1.2;text-wrap:balance}
+.story p{margin:0}
+.narr{font-size:25px}
+.q{font-weight:700;color:var(--gold);font-size:27px}
+.opts{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+.opts li{display:flex;gap:14px;align-items:flex-start;background:var(--panel2);border:2px solid transparent;border-radius:12px;padding:8px 14px;font-size:23px;line-height:1.4}
+.opts li b{font-family:var(--display);color:var(--gold);min-width:1.2em;font-size:26px}
+.opts li.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 16%,var(--panel2))}
+.why{margin-top:auto;border-inline-start:5px solid var(--ok);background:var(--panel2);border-radius:10px;padding:12px 16px;font-size:21px;line-height:1.5}
+.why b{color:var(--ok)}
+.why .src{color:var(--muted);font-size:18px}
+.scroll{overflow:auto;min-height:0;display:flex;flex-direction:column;gap:14px}
+
+/* العرض ثلاثي الأبعاد */
+.view{position:absolute;top:116px;left:36px;width:1084px;height:640px;border-radius:22px;border:1px solid var(--line);overflow:hidden;background:radial-gradient(ellipse at 50% 30%,#14304a 0,#09172a 75%)}
+.view canvas{display:block;touch-action:none}
+.lbl{position:absolute;transform:translate(-100%,-50%);margin-left:-14px;font-family:var(--display);font-size:22px;padding:4px 14px;border-radius:10px;background:rgba(6,16,28,.86);border:2px solid var(--line);white-space:nowrap;pointer-events:none;transition:opacity .3s}
+.lbl.drop{pointer-events:auto;border-style:dashed;border-color:var(--gold);color:var(--muted);min-width:170px;text-align:center}
+.lbl.drop.hot{background:rgba(240,184,74,.25)}
+.lbl.ok{border-color:var(--ok);color:var(--fg)}
+.viewtools{position:absolute;bottom:16px;left:16px;display:flex;gap:10px}
+.fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--muted);padding:40px}
+.zone{position:absolute;width:300px;border:3px dashed var(--c);border-radius:18px;background:color-mix(in srgb,var(--c) 10%,transparent);padding:14px;display:flex;flex-direction:column;gap:8px;align-items:center}
+.zone h5{margin:0;font-family:var(--display);font-size:26px;color:var(--c)}
+.zone .got{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;font-size:17px}
+.zone .got span{background:var(--panel2);border-radius:8px;padding:2px 10px}
+.zone.hot{background:color-mix(in srgb,var(--c) 28%,transparent)}
+.toast{position:absolute;top:24px;left:50%;transform:translateX(-50%);background:rgba(6,16,28,.92);border:2px solid var(--gold);border-radius:14px;padding:10px 22px;font-size:22px;max-width:90%;text-align:center;pointer-events:none;transition:opacity .3s}
+.apptap{position:absolute;display:flex;gap:14px;bottom:80px;left:50%;transform:translateX(-50%)}
+.apptap button{width:86px;height:86px;border-radius:22px;font-size:16px;font-weight:700;line-height:1.2;box-shadow:0 6px 0 rgba(0,0,0,.35)}
+
+/* الفرق */
+.bottom{position:absolute;top:776px;right:36px;left:36px;height:220px}
+.teams{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;height:100%}
+.team{background:var(--panel);border:3px solid var(--c);border-radius:18px;padding:12px 16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.team h4{margin:0;display:flex;justify-content:space-between;align-items:center;font-family:var(--display);color:var(--c);font-size:30px}
+.st{font-family:var(--body);font-size:19px;font-weight:700;color:var(--muted)}
+.st.ok{color:var(--ok)} .st.bad{color:var(--bad)}
+.picks{display:flex;gap:10px}
+.picks button{flex:1;height:76px;border-radius:14px;background:var(--panel2);border:3px solid var(--line);font-family:var(--display);font-size:40px;transition:transform .1s}
+.picks button:active{transform:scale(.96)}
+.picks.locked button{cursor:default}
+.picks button.sel{background:var(--c);color:#06121d;border-color:var(--c)}
+.picks button.right{border-color:var(--ok)}
+.cons{font-size:20px;line-height:1.45;color:var(--fg);overflow:auto}
+.team.lockedin{box-shadow:0 0 0 6px color-mix(in srgb,var(--c) 25%,transparent)}
+
+/* الأنشطة */
+.act{display:flex;gap:20px;height:100%}
+.turn{width:330px;flex:none;background:var(--panel);border:3px solid var(--c);border-radius:18px;padding:16px;display:flex;flex-direction:column;justify-content:center;gap:6px;text-align:center}
+.turn small{color:var(--muted);font-size:20px}
+.turn b{font-family:var(--display);font-size:40px;color:var(--c)}
+.tray{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-wrap:wrap;gap:12px;align-content:center;justify-content:center}
+.card{background:var(--panel2);border:2px solid var(--line);border-radius:14px;padding:10px 18px;font-size:22px;font-weight:700;cursor:grab;touch-action:none;max-width:420px;text-align:center;line-height:1.35}
+.card.dragging{opacity:.3}
+.ghost{position:fixed;z-index:99;pointer-events:none;background:var(--panel2);border:3px solid var(--gold);border-radius:14px;padding:10px 18px;font-family:var(--body);font-size:22px;font-weight:700;color:var(--fg);transform:translate(-50%,-50%) rotate(-2deg);box-shadow:0 10px 30px rgba(0,0,0,.5);direction:rtl}
+
+/* جدول الفروق */
+.tbl{width:100%;border-collapse:separate;border-spacing:6px;font-size:18px;table-layout:fixed}
+.tray.small .card{font-size:16px;padding:6px 12px;max-width:330px;border-radius:10px}
+.tray{overflow:auto}
+.tbl th{font-family:var(--display);font-size:22px;color:var(--gold);font-weight:500}
+.tbl td.k{font-weight:700;color:var(--muted);width:120px;font-size:17px;line-height:1.3}
+.cell{height:66px;font-size:16px;border:2px dashed var(--line);border-radius:12px;padding:6px 10px;vertical-align:middle;text-align:center;line-height:1.3}
+.cell.hot{border-color:var(--gold);background:rgba(240,184,74,.15)}
+.cell.ok{border:2px solid var(--ok);background:color-mix(in srgb,var(--ok) 12%,transparent)}
+
+/* التحكم */
+.ctrl{position:absolute;bottom:14px;right:36px;left:36px;height:0}
+.ctrlbar{position:absolute;top:116px;left:36px}
+.btn{background:var(--panel2);border:2px solid var(--line);border-radius:12px;padding:8px 22px;font-weight:700;font-size:22px}
+.btn:hover{border-color:var(--gold)}
+.btn.gold{background:var(--gold);color:#1a1405;border-color:var(--gold)}
+.btn:disabled{opacity:.35;cursor:default}
+.nav{position:absolute;bottom:12px;left:36px;display:flex;gap:12px;align-items:center}
+.nav .timer{font-family:var(--display);font-size:30px;min-width:3.4ch;text-align:center;font-variant-numeric:tabular-nums}
+.nav .timer.low{color:var(--bad)}
+
+/* الشاشة الافتتاحية والختامية */
+.big{font-family:var(--display);font-size:64px;line-height:1.15;margin:0;text-wrap:balance}
+.big b{color:var(--gold)}
+.sum{width:100%;border-collapse:collapse;font-size:24px}
+.sum th,.sum td{padding:10px;border-bottom:1px solid var(--line);text-align:center;font-variant-numeric:tabular-nums}
+.sum th:first-child,.sum td:first-child{text-align:right}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ===== إضافات الجولة الختامية ===== */
+.pipe{display:grid;gap:8px;margin-top:6px}
+.slot{display:grid;grid-template-columns:44px 1fr;gap:10px;align-items:center;border:2px dashed var(--line);border-radius:12px;padding:6px 10px;min-height:62px}
+.slot .n{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;font-family:var(--display);font-size:22px;background:var(--panel2);color:var(--muted)}
+.slot.hot{border-color:var(--gold);background:rgba(240,184,74,.12)}
+.slot.ok{border:2px solid var(--ok);background:color-mix(in srgb,var(--ok) 10%,transparent)}
+.slot.ok .n{background:var(--ok);color:#06121d}
+.slot .d{font-size:19px;line-height:1.35;color:var(--fg);font-weight:700}
+.slot .got{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+.slot .got span{background:var(--panel2);border:1px solid var(--ok);border-radius:8px;padding:0 8px;font-size:14px;font-weight:400;color:#cfeedd}
+.tray.small .card{font-size:17px;padding:8px 14px}
+.dim{position:absolute;inset:0;background:rgba(6,14,24,.9)}
+/* الاستوديو */
+.check{list-style:none;margin:0;padding:0;display:grid;gap:7px;font-size:19px}
+.check li{display:flex;gap:10px;align-items:baseline;background:var(--panel2);border-radius:10px;padding:6px 12px}
+.check li b{font-family:var(--display);color:var(--s4,#c58bff);min-width:1.4em}
+.check li small{color:var(--muted);margin-inline-start:auto;font-size:14px;white-space:nowrap}
+.bigclock{font-family:var(--display);font-size:64px;line-height:1;font-variant-numeric:tabular-nums;color:var(--gold)}
+.bigclock.low{color:var(--bad)}
+.ctrls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.ctrls .btn{font-size:20px;padding:6px 16px}
+.ctrls .btn.on{border-color:var(--gold);color:var(--gold)}
+.fin{display:flex;gap:10px}
+.fin button{flex:1;white-space:nowrap;border-radius:12px;border:3px solid var(--c);background:var(--panel2);font-size:19px;font-weight:700;padding:8px 6px;color:var(--fg)}
+.fin button.done{background:var(--c);color:#06121d}
+/* لوحة العرض */
+.padwrap{position:absolute;inset:0 0 64px 0}
+.frames{position:absolute;inset:14px 30px 10px;display:flex;justify-content:space-around;align-items:stretch;pointer-events:none}
+.frames div{width:220px;border:6px solid #3a5878;border-radius:30px;background:#f8f6ef;position:relative}
+.frames div span{position:absolute;top:-2px;left:50%;transform:translate(-50%,-100%);font-family:var(--display);font-size:20px;color:var(--gold);white-space:nowrap}
+.frames div::after{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:70px;height:12px;background:#3a5878;border-radius:0 0 8px 8px}
+#pad{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}
+.padbar{position:absolute;left:0;right:0;bottom:0;height:64px;background:#0b1828;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:0 14px}
+.padbar .sw{width:40px;height:40px;border-radius:50%;border:3px solid #0b1828;outline:2px solid var(--line)}
+.padbar .sw.on{outline:3px solid var(--gold)}
+.padbar .tb{font-size:18px;padding:6px 14px}
+.padbar .tb.on{border-color:var(--c);color:var(--c)}
+.frames.lbl-pad{inset:40px 30px 10px}
+/* تقييم اللجنة */
+.rub{width:100%;border-collapse:collapse;font-size:19px}
+.rub th,.rub td{padding:5px 4px;border-bottom:1px solid var(--line);text-align:center}
+.rub th:first-child,.rub td:first-child{text-align:right;width:36%}
+.rub td small{display:block;color:var(--muted);font-size:13px;line-height:1.3}
+.stars{display:inline-flex;gap:2px;direction:ltr}
+.stars button{width:27px;height:30px;font-size:22px;line-height:1;color:#3a506a;padding:0}
+.stars button.on{color:var(--gold)}
+.stars.locked button{pointer-events:none}
+.rub tfoot td{font-family:var(--display);font-size:26px}
+/* الطباعة */
+#printSheet{display:none}
+@media print{
+ @page{size:A4 portrait;margin:12mm}
+ body{background:#fff!important;color:#000!important}
+ #stage{display:none!important}
+ #printSheet{display:block;font-family:var(--body);color:#000;direction:rtl}
+ #printSheet h1{font-family:var(--display);font-size:22pt;margin:0 0 2mm}
+ #printSheet .sub{font-size:11pt;margin:0 0 5mm;color:#333}
+ #printSheet .f{border:1.5px solid #000;border-radius:3mm;padding:2mm 4mm;margin-bottom:3mm;font-size:12pt}
+ #printSheet .f b{display:block;margin-bottom:1mm}
+ #printSheet .ln{border-bottom:1px dashed #777;height:8mm}
+ #printSheet .ph{display:flex;justify-content:space-between;gap:5mm;margin-top:11mm}
+ #printSheet .ph div{flex:1;height:112mm;border:2px solid #000;border-radius:7mm;position:relative}
+ #printSheet .ph div span{position:absolute;top:-6mm;right:0;left:0;text-align:center;font-weight:700;font-size:12pt}
+ #printSheet .tip{font-size:10pt;margin-top:8mm;color:#333}
+}
+</style>
+</head>
+<body>
+<div id="stage">
+  <header class="head">
+    <div class="brand">مناقصة كأس العالم <b>2034</b><small>الجولة الختامية: العرض · التقنية الرقمية · ص 115 و120</small></div>
+    <div class="steps" id="steps"></div>
+    <div class="scores" id="scores"></div>
+  </header>
+  <section class="story" id="story"></section>
+  <section class="view" id="view">
+    <div id="overlay"></div>
+    <div class="toast" id="toast" style="opacity:0"></div>
+    <div class="viewtools" id="viewtools"><button class="btn" id="spinBtn">تدوير المشهد</button></div>
+  </section>
+  <section class="bottom" id="bottom"></section>
+  <nav class="nav">
+    <a class="btn" href="index.html" style="text-decoration:none">الرئيسية</a>
+    <button class="btn" id="prevBtn">→ السابق</button>
+    <button class="btn" id="timerBtn">مؤقت النقاش</button><span class="timer" id="timerView"></span>
+    <button class="btn gold" id="revealBtn">اكشف القرارات</button>
+    <button class="btn gold" id="nextBtn">التالي ←</button>
+    <button class="btn" id="resetBtn">بداية جديدة</button>
+  </nav>
+</div>
+
+<!-- ورقة التخطيط للطباعة (نسخة لكل فريق) -->
+<div id="printSheet">
+  <h1>ورقة التخطيط: تطبيق «من الفندق إلى المقعد»</h1>
+  <p class="sub">مناقصة كأس العالم 2034 · الجولة الختامية · التخطيط والتصميم (ص 115 و120) · الفريق: ...............................</p>
+  <div class="f"><b>1. فكرة التطبيق (في سطر واحد):</b><div class="ln"></div></div>
+  <div class="f"><b>2. أهداف التطبيق (هدفان على الأقل):</b><div class="ln"></div><div class="ln"></div></div>
+  <div class="f"><b>3. الفئة المستهدفة من استخدام التطبيق:</b><div class="ln"></div></div>
+  <div class="f" style="border:0;padding:0"><b>4. تصميم الشكل المبدئي للتطبيق (يدوياً): ارسموا الشاشات، ثم صلوها بأسهم توضح كيف ترتبط مع بعضها.</b></div>
+  <div class="ph"><div><span>الشاشة الرئيسية</span></div><div><span>شاشة التذكرة</span></div><div><span>الطريق إلى المقعد</span></div></div>
+  <p class="tip">تذكّروا: عناصر الواجهة (التسميات، الأزرار، مربعات النص، الصور)، ومواصفات الواجهة الجيدة: منظمة بشكل جيد، بسيطة، تعمل بكفاءة، متجاوبة مع حاجات المستخدم، مرنة.</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+"use strict";
+/* ====================================================================
+   البيانات (الكتاب ص 115 و120، وتدريب 3 ص 119 — الهدف 16)
+   ==================================================================== */
+const TEAMS=[{name:"الفريق الأول",c:"#4aa8ff"},{name:"الفريق الثاني",c:"#3fd08a"},{name:"الفريق الثالث",c:"#ff9a3c"}];
+const LET=["أ","ب","ج","د"];
+const P_DEC=10, P_DRAG=5, P_STAR=2;
+const CHAPTERS=["intro","dskip","steps","studio","present","rubric","dwhy","final"];
+const PARENT={r1:"dskip"};
+const PSTEPS=[{t:"تحديد فكرة التطبيق",s:"الفكرة"},{t:"تحديد أهداف التطبيق",s:"الأهداف"},{t:"تحديد الفئة المستهدفة من استخدام التطبيق",s:"الفئة المستهدفة"},{t:"تصميم الشكل المبدئي للتطبيق (يدوياً)",s:"الرسم اليدوي"}];
+const RUBRIC=[
+ {t:"الفكرة والأهداف",d:"فكرة واضحة في سطر، وأهداف محددة"},
+ {t:"الفئة المستهدفة",d:"التصميم يراعي مشجعين من أنحاء العالم"},
+ {t:"واجهة المستخدم",d:"منظمة، بسيطة، فيها تسميات وأزرار ومربعات نص وصور"},
+ {t:"ارتباط الشاشات وتجربة المستخدم",d:"أسهم توضح الانتقال، والوصول إلى المقعد سهل"}
+];
+const ROUNDS=[{n:"الجولة الأولى",key:"wc34-s1-v2"},{n:"الجولة الثانية",key:"wc34-s2-v1"},{n:"الجولة الثالثة",key:"wc34-s3-v1"}];
+
+const NODES={
+ intro:{type:"intro",title:"الجولة الختامية",
+  text:"وصلت الشركات الثلاث إلى الجولة الأخيرة. قالت اللجنة: «لن نعتمد سطراً واحداً من التطوير قبل أن نرى خطتكم. خططوا لتطبيقكم، وارسموا شاشاته بأيديكم، ثم اعرضوه علينا.» وفي آخر الجولة تُعلن الشركة الفائزة بالمناقصة.",
+  scene:"blue", next:()=>"dskip"},
+
+ dskip:{type:"dec",obj:16,page:115,title:"الشركة المستعجلة",
+  text:"شركة رابعة دخلت المناقصة متأخرة، فبدأت التطوير مباشرة دون تخطيط. بعد أسبوعين اكتشفت أن تطبيقها بلغة واحدة، وجمهور كأس العالم من أنحاء العالم.",
+  q:"أي مرحلة تجاوزتها الشركة، فضاع عليها أسبوعان؟",
+  opts:["مرحلة الاختبار","مرحلة النشر والتسويق","مرحلة التخطيط والتصميم","مرحلة التطوير"],ans:2,
+  cons:["الاختبار يكشف الأخطاء بعد البناء، لكن خطأ هذه الشركة بدأ قبل أن تبني.",
+        "التطبيق لم يصل إلى النشر أصلاً، والمشكلة في بدايته.",
+        "أصبتم: لو حددت الشركة فئتها المستهدفة قبل التطوير لعرفت أن جمهورها من أنحاء العالم.",
+        "الشركة طوّرت فعلاً، والمشكلة أنها طوّرت قبل أن تعرف ماذا تبني ولمن."],
+  why:"مرحلة التخطيط والتصميم: حدد الفكرة، والهدف من التطبيق، والفئة المستهدفة منه. أنشئ مخططاً يدوياً للتطبيق يشمل واجهات المستخدم المختلفة وكيفية ارتباطها مع بعضها.",
+  scene:"lost", onReveal:"blue", next:s=>s.right>=2?"steps":"r1"},
+
+ r1:{type:"dec",branch:true,obj:16,page:115,title:"لمن نبني؟",
+  text:"اللجنة تسأل سؤالاً أبسط:",
+  q:"في أي مرحلة نحدد لمن نبني التطبيق؟",
+  opts:["مرحلة التخطيط والتصميم","مرحلة الاختبار"],ans:0,
+  cons:["أصبتم: تحديد الفئة المستهدفة من خطوات التخطيط والتصميم، وهي المرحلة الأولى.","الاختبار يأتي بعد البناء، وتحديد الفئة المستهدفة يكون قبل أن نبدأ."],
+  why:"في مرحلة التخطيط والتصميم نحدد الفكرة، والهدف من التطبيق، والفئة المستهدفة منه.",
+  scene:"blue", next:()=>"steps"},
+
+ steps:{type:"drag",mode:"plan",obj:16,page:120,title:"ملف الخطة",
+  text:"اللجنة سلّمت كل شركة ملف خطة فارغاً، ومعه بطاقات من مسودة تطبيق «من الفندق إلى المقعد». في كل دور يسحب فريق بطاقة إلى خطوة التخطيط التي تنتمي إليها.",
+  items:[{t:"تطبيق يرافق المشجع من الفندق إلى مقعده في الملعب",k:0},{t:"أن يصل المشجع إلى مقعده دون أن يسأل أحداً",k:1},{t:"مشجعون من أنحاء العالم بلغات مختلفة",k:2},{t:"رسم الشاشات بالقلم على الورق",k:3},{t:"أن يعرض التذكرة والبوابة والمقعد بلغة المشجع",k:1},{t:"كبار السن الذين يزورون الملعب أول مرة",k:2},{t:"أسهم توضح كيف تنتقل الشاشة الرئيسية إلى شاشة التذكرة",k:3}],
+  done:"قبل أن تصمم وتطور تطبيقك، يتوجب عليك التخطيط الجيد له باتباع خطوات منها: تحديد فكرة التطبيق، وتحديد أهدافه، وتحديد الفئة المستهدفة من استخدامه، وتصميم شكله المبدئي يدوياً.",
+  scene:"plan", next:()=>"studio"},
+
+ studio:{type:"studio",obj:16,page:120,title:"استوديو التخطيط",
+  text:"حان دوركم. كل فريق يملأ ورقة التخطيط ويرسم شاشات تطبيقه بيده قبل أن ينتهي الوقت.",
+  scene:"pen", next:()=>"present"},
+
+ present:{type:"present",obj:16,page:"115 و120",title:"العرض أمام اللجنة",
+  text:"يتقدم ممثل كل فريق ويعرض خطته في دقيقتين: الفكرة، والأهداف، والفئة المستهدفة، ثم يشرح شاشاته وكيف ترتبط. يمكنه أن يعيد رسمها على لوحة العرض.",
+  scene:"pen", next:()=>"rubric"},
+
+ rubric:{type:"rubric",obj:16,page:"116 و120",title:"تقييم اللجنة",
+  text:"لكل فريق: من 1 إلى 5 نجوم في كل معيار، ثم اعتمدوا التقييم. كل نجمة بنقطتين.",
+  scene:"pen", next:()=>"dwhy"},
+
+ dwhy:{type:"dec",obj:16,page:"115 و119",title:"سؤال رئيس اللجنة",
+  text:"قبل إعلان النتيجة، يسأل رئيس اللجنة الشركات الثلاث سؤالاً أخيراً (تدريب 3): «كيف ساعدكم التخطيط والتصميم في تطوير التطبيق؟»",
+  q:"أي إجابة هي الأدق؟",
+  opts:["جعلنا نستغني عن مرحلة الاختبار","رفع التطبيق إلى متجر التطبيقات","حدد لنا الفكرة والهدف والفئة المستهدفة، ورسمنا الواجهات وكيف ترتبط قبل التنفيذ، فعرفنا ماذا نبني ولمن","كتب المقطع البرمجي نيابة عنا"],ans:2,
+  cons:["رئيس اللجنة: «الاختبار مرحلة لا يغني عنها التخطيط.»",
+        "رئيس اللجنة: «هذه مرحلة النشر والتسويق، وهي آخر المراحل.»",
+        "رئيس اللجنة: «هذا هو الجواب الذي ننتظره من شركة تستحق المناقصة.»",
+        "رئيس اللجنة: «التخطيط لا يكتب مقطعاً برمجياً؛ إنه يحدد ما الذي سيُبنى.»"],
+  why:"مرحلة التخطيط والتصميم هي الأولى: نحدد فيها الفكرة والهدف والفئة المستهدفة، وننشئ مخططاً يدوياً يشمل واجهات المستخدم وكيفية ارتباطها، فيُنفَّذ التطوير على تصميم واضح.",
+  scene:"pen", next:()=>"final"},
+
+ final:{type:"final",title:"إعلان الفائز بالمناقصة",
+  text:"جمعت اللجنة نقاط الجولات الأربع.",
+  exit:"الواجب (تدريب 3 ص 119): صف كيف ستساعد مرحلة التخطيط والتصميم في تطوير التطبيق.",
+  scene:"final"}
+};
+
+/* ====================================================================
+   الحالة
+   ==================================================================== */
+const KEY="wc34-s4-v1";
+function fresh(){return {node:"intro",hist:[],scores:[0,0,0],dec:{},drag:{},studio:{min:8,fin:[false,false,false]},present:{team:0},rub:{v:[[0,0,0,0],[0,0,0,0],[0,0,0,0]],done:false},log:{right:[0,0,0],tries:[0,0,0],drag:[0,0,0],rub:[0,0,0]}};}
+let S=null; try{S=JSON.parse(localStorage.getItem(KEY)||"null");}catch(e){}
+if(!S||!NODES[S.node]) S=fresh();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}};
+const decState=id=>S.dec[id]||(S.dec[id]={c:[null,null,null],rev:false});
+const dragState=id=>S.drag[id]||(S.drag[id]={placed:{},turn:0});
+
+const stage=document.getElementById("stage"); let SCALE=1;
+function fit(){ const w=innerWidth,h=innerHeight; SCALE=Math.min(w/1920,h/1080);
+ stage.style.transform=`scale(${SCALE})`; stage.style.left=((w-1920*SCALE)/2)+"px"; stage.style.top=((h-1080*SCALE)/2)+"px";
+ if(R.renderer) R.renderer.setPixelRatio(Math.min(2,(devicePixelRatio||1)*SCALE*1.2)); }
+addEventListener("resize",fit);
+
+/* ====================================================================
+   المشهد ثلاثي الأبعاد: طاولة مخطط زرقاء، ولوحات الخطة، والكأس
+   ==================================================================== */
+const R={}; const VIEW_W=1084, VIEW_H=640; const view=document.getElementById("view");
+let spin=false, screenMode="", showPanels=false, finalMode=false, winnerText="", winnerColor="#f0b84a";
+const panelOn=[false,false,false,false];
+function canvasTex(w,h,draw){const c=document.createElement("canvas");c.width=w;c.height=h;const g=c.getContext("2d");draw(g,w,h);const t=new THREE.CanvasTexture(c);t.anisotropy=4;return {tex:t,ctx:g,c};}
+function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath();}
+function txt(g,s,x,y,size,color,weight){g.fillStyle=color;g.font=`${weight||"bold"} ${size}px Tahoma`;g.textAlign="center";g.direction="rtl";g.fillText(s,x,y);}
+
+function drawIcon(g,k,cx,cy){ g.strokeStyle="#c58bff"; g.fillStyle="#c58bff"; g.lineWidth=8; g.lineCap="round";
+ if(k===0){ g.beginPath(); g.arc(cx,cy-12,34,Math.PI*0.8,Math.PI*2.2); g.stroke(); g.fillRect(cx-18,cy+22,36,10); g.fillRect(cx-14,cy+38,28,8); for(let i=0;i<5;i++){const a=-Math.PI/2+(i-2)*0.55; g.beginPath(); g.moveTo(cx+Math.cos(a)*48,cy-12+Math.sin(a)*48); g.lineTo(cx+Math.cos(a)*62,cy-12+Math.sin(a)*62); g.stroke();} }
+ if(k===1){ [44,28,12].forEach(r=>{g.beginPath();g.arc(cx,cy,r,0,7);g.stroke();}); g.beginPath(); g.moveTo(cx,cy); g.lineTo(cx+56,cy-44); g.stroke(); }
+ if(k===2){ [[-36,0],[0,-8],[36,0]].forEach(([dx,dy],i)=>{ const r=i===1?18:14; g.beginPath(); g.arc(cx+dx,cy-18+dy,r,0,7); g.fill(); g.beginPath(); g.arc(cx+dx,cy+34+dy,r*1.6,Math.PI,0); g.fill(); }); }
+ if(k===3){ g.beginPath(); g.moveTo(cx-40,cy+40); g.lineTo(cx+30,cy-30); g.lineTo(cx+44,cy-16); g.lineTo(cx-26,cy+54); g.closePath(); g.stroke(); g.beginPath(); g.moveTo(cx-40,cy+40); g.lineTo(cx-48,cy+62); g.lineTo(cx-26,cy+54); g.stroke(); }
+}
+
+function init3D(){
+ if(!window.THREE){ view.insertAdjacentHTML("afterbegin",'<div class="fallback">تعذّر تحميل المشهد ثلاثي الأبعاد. تأكد من الاتصال بالإنترنت ثم أعد تحميل الصفحة. القصة والقرارات والأنشطة تعمل بدونه.</div>'); return; }
+ const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+ renderer.setSize(VIEW_W,VIEW_H,false); renderer.domElement.style.width=VIEW_W+"px"; renderer.domElement.style.height=VIEW_H+"px";
+ renderer.outputEncoding=THREE.sRGBEncoding; view.insertBefore(renderer.domElement,view.firstChild);
+ const scene=new THREE.Scene(); scene.fog=new THREE.Fog(0x09172a,18,36);
+ const cam=new THREE.PerspectiveCamera(36,VIEW_W/VIEW_H,0.1,100); cam.position.set(0,6.2,17.5);
+ const ctl=new THREE.OrbitControls(cam,renderer.domElement); ctl.target.set(0,3.2,0.4); ctl.enableDamping=true; ctl.enablePan=false; ctl.minDistance=9; ctl.maxDistance=22; ctl.maxPolarAngle=Math.PI*0.49;
+ scene.add(new THREE.HemisphereLight(0xbcd8ff,0x0b1a10,0.85));
+ const key=new THREE.DirectionalLight(0xffffff,0.95); key.position.set(5,10,8); scene.add(key);
+ const rim=new THREE.DirectionalLight(0xc58bff,0.6); rim.position.set(-6,5,-6); scene.add(rim);
+
+ /* طاولة المخطط */
+ const bp=canvasTex(1024,1024,(g,w,h)=>{ g.fillStyle="#0c2e52"; g.fillRect(0,0,w,h); g.strokeStyle="rgba(160,205,255,.18)"; g.lineWidth=2; for(let i=0;i<=w;i+=32){g.beginPath();g.moveTo(i,0);g.lineTo(i,h);g.stroke();g.beginPath();g.moveTo(0,i);g.lineTo(w,i);g.stroke();}
+  g.strokeStyle="rgba(200,225,255,.45)"; g.lineWidth=4; for(let i=0;i<=w;i+=128){g.beginPath();g.moveTo(i,0);g.lineTo(i,h);g.stroke();g.beginPath();g.moveTo(0,i);g.lineTo(w,i);g.stroke();}
+  g.strokeStyle="rgba(255,255,255,.6)"; g.lineWidth=6; g.setLineDash([22,14]); g.strokeRect(120,220,w-240,h-440); g.beginPath(); g.arc(w/2,h/2,110,0,7); g.stroke(); });
+ const disc=new THREE.Mesh(new THREE.CircleGeometry(10,64),new THREE.MeshStandardMaterial({map:bp.tex,roughness:.9})); disc.rotation.x=-Math.PI/2; scene.add(disc);
+ const ring=new THREE.Mesh(new THREE.TorusGeometry(10,0.06,8,96),new THREE.MeshBasicMaterial({color:0xc58bff})); ring.rotation.x=Math.PI/2; ring.position.y=0.02; scene.add(ring);
+
+ /* الجوال */
+ const phone=new THREE.Group(); phone.position.set(0,3.25,0); scene.add(phone);
+ phone.add(new THREE.Mesh(new THREE.BoxGeometry(3.1,6.2,0.34),new THREE.MeshStandardMaterial({color:0x0b1520,metalness:.5,roughness:.35})));
+ phone.add(new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(3.12,6.22,0.36)),new THREE.LineBasicMaterial({color:0x6f8aa6})));
+ const scr=canvasTex(512,1024,()=>{});
+ const screen=new THREE.Mesh(new THREE.PlaneGeometry(2.8,5.6),new THREE.MeshBasicMaterial({map:scr.tex})); screen.position.z=0.18; phone.add(screen);
+ const stand=new THREE.Mesh(new THREE.CylinderGeometry(1.1,1.3,0.12,48),new THREE.MeshStandardMaterial({color:0x1d2b3d,metalness:.6,roughness:.4})); stand.position.y=-3.2; phone.add(stand);
+
+ /* لوحات خطوات التخطيط الأربع */
+ const PPOS=[[4.9,5.6,0.2],[5.3,2.7,1.4],[-4.9,5.6,0.2],[-5.3,2.7,1.4]];
+ const panels=PSTEPS.map((p,k)=>{ const t=canvasTex(512,320,(g,w,h)=>{ g.fillStyle="rgba(18,30,58,.92)"; rr(g,6,6,w-12,h-12,34); g.fill(); g.strokeStyle="#c58bff"; g.lineWidth=6; g.stroke();
+   g.fillStyle="#c58bff"; g.beginPath(); g.arc(70,70,40,0,7); g.fill(); txt(g,String(k+1),70,88,50,"#12122a"); drawIcon(g,k,w/2,140); txt(g,p.s,w/2,272,50,"#ffffff"); });
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(2.6,1.62),new THREE.MeshBasicMaterial({map:t.tex,transparent:true,side:THREE.DoubleSide})); m.position.set(...PPOS[k]); m.scale.setScalar(0.001); scene.add(m); return {m,s:0,base:PPOS[k]}; });
+
+ /* الكأس */
+ const pts=[]; [[0,0],[1.0,0],[1.0,0.25],[0.45,0.4],[0.3,0.9],[0.32,1.5],[0.9,1.9],[1.25,2.6],[1.35,3.5],[1.25,3.55],[1.1,2.8],[0.75,2.1],[0,2.0]].forEach(([x,y])=>pts.push(new THREE.Vector2(x,y)));
+ const gold=new THREE.MeshStandardMaterial({color:0xf0b84a,metalness:.55,roughness:.28,emissive:0x5a3a08,emissiveIntensity:.35});
+ const trophy=new THREE.Group(); const cup=new THREE.Mesh(new THREE.LatheGeometry(pts,48),gold); trophy.add(cup);
+ const base=new THREE.Mesh(new THREE.BoxGeometry(2.0,0.6,2.0),new THREE.MeshStandardMaterial({color:0x1d2b3d,metalness:.4,roughness:.5})); base.position.y=-0.3; trophy.add(base);
+ trophy.position.set(0,-5,0); trophy.scale.setScalar(1.15); scene.add(trophy);
+ const plate=canvasTex(512,128,()=>{}); const plateS=new THREE.Sprite(new THREE.SpriteMaterial({map:plate.tex,depthTest:false})); plateS.scale.set(4.4,1.1,1); plateS.visible=false; scene.add(plateS);
+
+ /* قصاصات الاحتفال */
+ const NC=260; const conf=new THREE.InstancedMesh(new THREE.PlaneGeometry(0.14,0.24),new THREE.MeshBasicMaterial({color:0xffffff,side:THREE.DoubleSide}),NC);
+ const cdat=[]; const ccol=[0x4aa8ff,0x3fd08a,0xff9a3c,0xf0b84a,0xffffff,0xc58bff];
+ for(let i=0;i<NC;i++){ cdat.push({x:(Math.random()-.5)*14,y:Math.random()*12,z:(Math.random()-.5)*8,v:0.8+Math.random()*1.2,r:Math.random()*6,rs:(Math.random()-.5)*6}); conf.setColorAt(i,new THREE.Color(ccol[i%ccol.length])); }
+ conf.visible=false; scene.add(conf);
+
+ /* الجمهور */
+ const N=150; const bodies=new THREE.InstancedMesh(new THREE.CylinderGeometry(0.11,0.15,0.48,8),new THREE.MeshStandardMaterial({color:0xffffff}),N);
+ const heads=new THREE.InstancedMesh(new THREE.SphereGeometry(0.12,10,8),new THREE.MeshStandardMaterial({color:0xf2d0a4}),N);
+ const fans=[]; const cols=[0x1b8a4a,0xffffff,0x4aa8ff,0xef6450,0xf0b84a,0x8f7cff];
+ for(let i=0;i<N;i++){ fans.push({a:Math.random()*Math.PI*2,r:7.4+Math.random()*2.2,ph:Math.random()*6}); bodies.setColorAt(i,new THREE.Color(cols[i%cols.length])); }
+ scene.add(bodies,heads);
+ Object.assign(R,{renderer,scene,cam,ctl,phone,scr,panels,trophy,plate,plateS,conf,cdat});
+ fit();
+ const dummy=new THREE.Object3D(); let last=performance.now();
+ (function loop(now){
+  const dt=Math.min(.05,(now-last)/1000); last=now;
+  const spinT=spin||finalMode;
+  if(spinT){ phone.rotation.y+=dt*0.5; trophy.rotation.y+=dt*0.7; } else phone.rotation.y+=(Math.sin(now/2600)*0.16-phone.rotation.y)*Math.min(1,dt*2);
+  phone.visible=!finalMode||trophy.position.y<1.5; phone.position.y+=((finalMode?-4:3.25)-phone.position.y)*Math.min(1,dt*2.5);
+  trophy.position.y+=((finalMode?0.65:-5)-trophy.position.y)*Math.min(1,dt*1.8); plateS.visible=finalMode&&trophy.position.y>-2; plateS.position.set(0,trophy.position.y+5.2,0);
+  const jump=finalMode?0.35:0.05;
+  fans.forEach((f,i)=>{ const y=0.24+Math.abs(Math.sin(now/(finalMode?180:300)+f.ph))*jump; dummy.position.set(Math.cos(f.a)*f.r,y,Math.sin(f.a)*f.r); dummy.updateMatrix(); bodies.setMatrixAt(i,dummy.matrix); dummy.position.y=y+0.36; dummy.updateMatrix(); heads.setMatrixAt(i,dummy.matrix); });
+  bodies.instanceMatrix.needsUpdate=true; heads.instanceMatrix.needsUpdate=true;
+  panels.forEach((p,k)=>{ const goal=showPanels&&panelOn[k]&&!finalMode?1:0; p.s+=(goal-p.s)*Math.min(1,dt*4); p.m.scale.setScalar(Math.max(0.001,p.s)); p.m.visible=p.s>0.01; p.m.position.y=p.base[1]+Math.sin(now/800+k)*0.12; p.m.lookAt(cam.position); });
+  conf.visible=finalMode; if(finalMode){ cdat.forEach((c,i)=>{ c.y-=c.v*dt; c.r+=c.rs*dt; if(c.y<0){c.y=11+Math.random()*2;} dummy.position.set(c.x+Math.sin(now/600+i)*0.3,c.y,c.z); dummy.rotation.set(c.r,c.r*0.7,0); dummy.updateMatrix(); conf.setMatrixAt(i,dummy.matrix); }); dummy.rotation.set(0,0,0); conf.instanceMatrix.needsUpdate=true; }
+  ctl.update(); renderer.render(scene,cam);
+  requestAnimationFrame(loop);
+ })(last);
+}
+
+/* شاشة الجوال */
+function paintScreen(mode,force){
+ if(!R.scr) return; if(!force&&mode===screenMode) return; screenMode=mode;
+ const g=R.scr.ctx,w=512,h=1024; g.clearRect(0,0,w,h);
+ if(mode==="blue"){ g.fillStyle="#0c2e52"; g.fillRect(0,0,w,h); g.strokeStyle="rgba(160,205,255,.2)"; g.lineWidth=2; for(let i=0;i<w;i+=32){g.beginPath();g.moveTo(i,0);g.lineTo(i,h);g.stroke();} for(let i=0;i<h;i+=32){g.beginPath();g.moveTo(0,i);g.lineTo(w,i);g.stroke();}
+  g.strokeStyle="#ffffff"; g.lineWidth=5; g.setLineDash([16,10]); [[50,90,412,110],[50,240,412,250],[50,530,412,90],[50,660,196,90],[266,660,196,90]].forEach(a=>g.strokeRect(...a)); g.setLineDash([]);
+  txt(g,"المخطط",w/2,160,46,"#fff"); txt(g,"قبل أن نبني",w/2,870,40,"#c58bff"); txt(g,"نخطط",w/2,930,52,"#fff"); return R.scr.tex.needsUpdate=true; }
+ if(mode==="lost"){ g.fillStyle="#f4f7fb"; g.fillRect(0,0,w,h); txt(g,"تذاكر الدوري المحلي",w/2,110,40,"#0d1b2a"); g.fillStyle="#0f3a5c"; rr(g,40,150,432,150,26); g.fill(); txt(g,"مباراة الأسبوع",w/2,240,36,"#fff");
+  [["English?",120,420,"#ef6450"],["日本語?",370,520,"#ff9a3c"],["Español?",150,640,"#c58bff"],["Français?",360,760,"#4aa8ff"]].forEach(([s,x,y,c])=>{ g.fillStyle=c; rr(g,x-100,y-50,200,74,30); g.fill(); g.fillStyle="#fff"; g.font="bold 34px Tahoma"; g.textAlign="center"; g.fillText(s,x,y); });
+  txt(g,"الجمهور لا يفهم التطبيق",w/2,900,32,"#ef6450"); return R.scr.tex.needsUpdate=true; }
+ if(mode==="plan"){ g.fillStyle="#f8f6ef"; g.fillRect(0,0,w,h); txt(g,"ملف الخطة",w/2,100,48,"#2b2b2b");
+  PSTEPS.forEach((p,k)=>{ const y=180+k*190; g.strokeStyle="#2b2b2b"; g.lineWidth=4; rr(g,40,y,432,150,20); g.stroke(); txt(g,`${k+1}. ${p.s}`,w/2,y+70,38,"#2b2b2b"); if(panelOn[k]){ g.strokeStyle="#1b8a4a"; g.lineWidth=10; g.beginPath(); g.moveTo(200,y+100); g.lineTo(240,y+130); g.lineTo(320,y+95); g.stroke(); } });
+  return R.scr.tex.needsUpdate=true; }
+ if(mode==="pen"){ g.fillStyle="#f8f6ef"; g.fillRect(0,0,w,h); g.strokeStyle="#2b2b2b"; g.lineWidth=4;
+  const wob=(x,y,a,b)=>{ g.beginPath(); g.moveTo(x+Math.random()*4,y); g.lineTo(x+a,y+Math.random()*4); g.lineTo(x+a-Math.random()*4,y+b); g.lineTo(x,y+b-Math.random()*4); g.closePath(); g.stroke(); };
+  wob(50,80,412,90); wob(50,220,412,230); wob(50,500,412,90); wob(50,630,190,90); wob(272,630,190,90);
+  txt(g,"تذكرتي",w/2,140,40,"#2b2b2b","normal"); txt(g,"صورة الملعب",w/2,350,32,"#666","normal"); txt(g,"بوابتي",w/2,560,36,"#2b2b2b","normal");
+  g.strokeStyle="#c58bff"; g.lineWidth=6; g.beginPath(); g.moveTo(256,760); g.quadraticCurveTo(420,860,256,940); g.stroke(); g.beginPath(); g.moveTo(256,940); g.lineTo(286,920); g.moveTo(256,940); g.lineTo(282,962); g.stroke();
+  txt(g,"إلى شاشة المقعد",180,880,28,"#c58bff","normal"); return R.scr.tex.needsUpdate=true; }
+}
+function paintPlate(){ if(!R.plate) return; const g=R.plate.ctx; g.clearRect(0,0,512,128); g.fillStyle="#0b1520"; rr(g,4,4,504,120,20); g.fill(); g.strokeStyle=winnerColor; g.lineWidth=6; g.stroke(); txt(g,winnerText||"الفائز",256,84,52,winnerColor); R.plate.tex.needsUpdate=true; }
+function syncPanels(){ const d=dragState("steps"); for(let k=0;k<4;k++) panelOn[k]=false; Object.keys(d.placed).forEach(i=>panelOn[NODES.steps.items[i].k]=true); }
+function setScene(kind){
+ if(!R.scene) return;
+ showPanels=false; finalMode=false; syncPanels();
+ if(kind==="blue") paintScreen("blue");
+ if(kind==="lost") paintScreen("lost");
+ if(kind==="plan"){ showPanels=true; paintScreen("plan",true); }
+ if(kind==="pen"){ showPanels=true; paintScreen("pen"); }
+ if(kind==="final"){ finalMode=true; paintPlate(); }
+}
+function reaction(kind){ if(!R.scene) return; if(kind==="blue") paintScreen("blue"); }
+
+/* ====================================================================
+   الواجهة والمحرك
+   ==================================================================== */
+const $=id=>document.getElementById(id);
+const storyEl=$("story"), bottomEl=$("bottom"), overlay=$("overlay");
+let toastT=0; function toast(m){const t=$("toast");t.textContent=m;t.style.opacity=1;clearTimeout(toastT);toastT=setTimeout(()=>t.style.opacity=0,2800);}
+function renderScores(bump){ $("scores").innerHTML=TEAMS.map((t,k)=>`<span class="chip ${bump&&bump.includes(k)?"bump":""}" style="--c:${t.c}"><i></i>${t.name}<span class="pts">${S.scores[k]}</span></span>`).join(""); if(bump) setTimeout(()=>document.querySelectorAll(".chip.bump").forEach(c=>c.classList.remove("bump")),350); }
+function renderSteps(){ const ch=CHAPTERS.indexOf(PARENT[S.node]||S.node); $("steps").innerHTML=CHAPTERS.map((_,i)=>`<span class="${i<ch?"done":i===ch?"on":""}"></span>`).join(""); }
+function kickHTML(n){ return `<div class="kick">${n.obj!==undefined?`<span class="tag obj">الهدف ${n.obj}</span>`:""}${n.page?`<span class="tag">الكتاب ص ${n.page}</span>`:""}${n.branch?`<span class="tag branch">مسار الإنقاذ</span>`:""}</div>`; }
+const whyHTML=(n,label)=>`<div class="why"><b>${label||"من الكتاب:"}</b> ${n.why||n.done} <span class="src">(ص ${n.page})</span></div>`;
+
+function render(){
+ stopTimer(); stopClock(); overlay.innerHTML=""; $("viewtools").hidden=false;
+ const n=NODES[S.node]; renderSteps(); renderScores(); setScene(n.scene);
+ $("prevBtn").disabled=S.hist.length===0;
+ $("timerBtn").hidden=n.type!=="dec"; $("timerView").textContent="";
+ $("revealBtn").hidden=n.type!=="dec";
+ $("nextBtn").textContent=n.type==="final"?"بداية جديدة":"التالي ←";
+ ({intro:renderIntro,dec:renderDec,drag:renderDrag,studio:renderStudio,present:renderPresent,rubric:renderRubric,final:renderFinal})[n.type](n);
+ updateNext(); save();
+}
+function updateNext(){ const n=NODES[S.node]; let ok=true;
+ if(n.type==="dec") ok=decState(S.node).rev; if(n.type==="drag") ok=dragDone(n); if(n.type==="rubric") ok=S.rub.done;
+ $("nextBtn").disabled=!ok; $("nextBtn").classList.toggle("gold",ok); }
+
+function renderIntro(n){
+ storyEl.innerHTML=`<div class="kick"><span class="tag">الجولة الختامية</span><span class="tag">الوحدة الثالثة · الدرس الأول</span></div>
+  <h2 class="big">${n.title}</h2><p class="narr">${n.text}</p>
+  <p class="narr" style="color:var(--muted)">في هذه الجولة: دور مرحلة التخطيط والتصميم، وخطواتها، ثم تخطيط تطبيقكم ورسم شاشاته وعرضه على اللجنة.</p>`;
+ bottomEl.innerHTML=`<div class="teams">${TEAMS.map((t,k)=>`<div class="team" style="--c:${t.c}"><h4>${t.name}<span class="st">${S.scores[k]} نقطة</span></h4><div class="cons">نقاط هذه الجولة تُجمع مع نقاط الجولات الثلاث السابقة لإعلان الفائز.</div></div>`).join("")}</div>`;
+}
+
+function renderDec(n){
+ const st=decState(S.node);
+ storyEl.innerHTML=`${kickHTML(n)}<h2>${n.title}</h2><div class="scroll">${st.rev?"":`<p class="narr">${n.text}</p>`}<p class="q">${n.q}</p>
+  <ol class="opts">${n.opts.map((o,k)=>`<li class="${st.rev&&k===n.ans?"right":""}"><b>${LET[k]}</b><span>${o}</span></li>`).join("")}</ol></div>${st.rev?whyHTML(n):""}`;
+ bottomEl.innerHTML=`<div class="teams">${TEAMS.map((t,k)=>{ const c=st.c[k];
+  const status=st.rev?(c===null?'<span class="st">لم يقرر</span>':c===n.ans?`<span class="st ok">✓ صحيح +${P_DEC}</span>`:'<span class="st bad">✗ قرار خاطئ</span>'):(c===null?'<span class="st">يتناقش…</span>':'<span class="st ok">🔒 تم القرار</span>');
+  const picks=n.opts.map((_,o)=>`<button data-t="${k}" data-o="${o}" class="${st.rev?((c===o?"sel ":"")+(o===n.ans?"right":"")):""}" aria-label="${t.name} يختار ${LET[o]}">${LET[o]}</button>`).join("");
+  return `<div class="team ${!st.rev&&c!==null?"lockedin":""}" style="--c:${t.c}"><h4>${t.name}${status}</h4><div class="picks ${st.rev?"locked":""}">${picks}</div>${st.rev&&c!==null?`<div class="cons">${n.cons[c]}</div>`:""}</div>`;}).join("")}</div>`;
+ bottomEl.querySelectorAll(".picks button").forEach(b=>b.onclick=()=>{ if(st.rev) return; const k=+b.dataset.t,o=+b.dataset.o; st.c[k]=(st.c[k]===o?null:o); save(); renderDec(n); });
+ $("revealBtn").disabled=st.rev;
+ if(st.rev&&n.onReveal) reaction(n.onReveal);
+}
+function doReveal(){ const n=NODES[S.node]; if(n.type!=="dec") return; const st=decState(S.node); if(st.rev) return;
+ st.rev=true; const bump=[]; st.c.forEach((c,k)=>{ if(c===null) return; S.log.tries[k]++; if(c===n.ans){S.scores[k]+=P_DEC;S.log.right[k]++;bump.push(k);} });
+ save(); renderDec(n); renderScores(bump); updateNext();
+ const nx=n.next({right:st.c.filter(c=>c===n.ans).length}); if(nx==="r1") toast("أغلب الشركات لم تصب. اللجنة تفتح مسار الإنقاذ.");
+}
+
+/* ---------- السحب والإفلات: ملف الخطة ---------- */
+function dragDone(n){ return Object.keys(dragState(S.node).placed).length>=n.items.length; }
+function renderDrag(n){
+ const d=dragState(S.node); const done=dragDone(n);
+ const remaining=n.items.map((_,i)=>i).filter(i=>!(i in d.placed)); const team=TEAMS[d.turn%3];
+ const placedK=k=>Object.keys(d.placed).filter(i=>n.items[i].k===k);
+ const board=`<div class="pipe">${PSTEPS.map((p,k)=>{ const ps=placedK(k); return `<div class="slot ${ps.length?"ok":""}" data-drop="step:${k}"><span class="n">${k+1}</span><span class="d">${p.t}${ps.length?`<span class="got">${ps.map(i=>`<span>${n.items[i].t}</span>`).join("")}</span>`:""}</span></div>`; }).join("")}</div>`;
+ syncPanels(); paintScreen("plan",true);
+ storyEl.innerHTML=`${kickHTML(n)}<h2>${n.title}</h2><div class="scroll">${done?"":`<p class="narr">${n.text}</p>`}${board}</div>${done?whyHTML(n,"اكتملت المهمة:"):""}`;
+ bottomEl.innerHTML=`<div class="act"><div class="turn" style="--c:${team.c}">${done?`<b style="color:var(--ok)">✓ اكتملت</b><small>اضغط التالي</small>`:`<small>الدور الآن على</small><b>${team.name}</b><small>اسحب بطاقة واحدة إلى مكانها</small>`}</div>
+  <div class="tray small" id="tray">${remaining.map(i=>`<div class="card" data-i="${i}">${n.items[i].t}</div>`).join("")||'<span style="color:var(--muted)">لا بطاقات متبقية</span>'}</div></div>`;
+ bottomEl.querySelectorAll(".card").forEach(el=>startDraggable(el,n));
+}
+function startDraggable(el,n){
+ el.onpointerdown=e=>{ e.preventDefault(); const i=+el.dataset.i; el.classList.add("dragging");
+  const g=document.createElement("div"); g.className="ghost"; g.textContent=n.items[i].t; g.style.fontSize=(22*SCALE)+"px"; g.style.padding=`${10*SCALE}px ${18*SCALE}px`; document.body.appendChild(g);
+  let hot=null;
+  const move=ev=>{ g.style.left=ev.clientX+"px"; g.style.top=ev.clientY+"px"; const t=dropAt(ev.clientX,ev.clientY); if(hot&&hot!==t) hot.classList.remove("hot"); if(t) t.classList.add("hot"); hot=t; };
+  move(e);
+  const up=ev=>{ removeEventListener("pointermove",move); removeEventListener("pointerup",up); removeEventListener("pointercancel",up); g.remove(); el.classList.remove("dragging"); if(hot) hot.classList.remove("hot"); const t=dropAt(ev.clientX,ev.clientY); if(t) tryDrop(n,i,t.dataset.drop); };
+  addEventListener("pointermove",move); addEventListener("pointerup",up); addEventListener("pointercancel",up); };
+}
+function dropAt(x,y){ return [...document.querySelectorAll("[data-drop]")].find(el=>{const r=el.getBoundingClientRect(); return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom;})||null; }
+function tryDrop(n,i,target){
+ const d=dragState(S.node); const k=d.turn%3; const it=n.items[i];
+ if(target==="step:"+it.k){ d.placed[i]=k; S.scores[k]+=P_DRAG; S.log.drag[k]++; toast(`✓ ${TEAMS[k].name}: إجابة صحيحة +${P_DRAG}`); renderScores([k]); }
+ else toast(`✗ ${TEAMS[k].name}: اسألوا أنفسكم: هل هذه فكرة، أم هدف، أم فئة مستهدفة، أم رسم؟ الدور ينتقل.`);
+ d.turn++; save(); renderDrag(n); updateNext();
+}
+
+/* ---------- الاستوديو: مؤقت وورقة تخطيط ---------- */
+let clk=null, clkLeft=0, clkRun=false;
+function stopClock(){ if(clk){clearInterval(clk);clk=null;} clkRun=false; }
+const mmss=s=>`${Math.floor(s/60)}:${String(Math.max(0,s)%60).padStart(2,"0")}`;
+function renderStudio(n){
+ const T=S.studio; if(!clkRun) clkLeft=T.min*60;
+ const list=[["اكتبوا فكرة التطبيق في سطر واحد.","ص 120"],["حددوا هدفين للتطبيق.","ص 120"],["حددوا الفئة المستهدفة من استخدامه.","ص 120"],["ارسموا يدوياً: الشاشة الرئيسية، وشاشة التذكرة، والطريق إلى المقعد.","ص 120"],["صلوا الشاشات بأسهم توضح كيف ترتبط مع بعضها.","ص 115"],["استخدموا عناصر الواجهة: تسمية، زر، مربع نص، صورة.","ص 116"],["راعوا مواصفات الواجهة الجيدة: منظمة، بسيطة، متجاوبة مع حاجات المستخدم.","ص 116"]];
+ storyEl.innerHTML=`${kickHTML(n)}<h2>${n.title}</h2><div class="scroll"><p class="narr">${n.text}</p><ol class="check">${list.map(([t,p],i)=>`<li><b>${i+1}</b><span>${t}</span><small>${p}</small></li>`).join("")}</ol></div>`;
+ bottomEl.innerHTML=`<div class="act"><div class="turn" style="--c:var(--gold)"><small>الوقت المتبقي</small><div class="bigclock" id="bigclock">${mmss(clkLeft)}</div>
+   <div class="ctrls">${[5,8,10].map(m=>`<button class="btn ${T.min===m?"on":""}" data-m="${m}">${m} د</button>`).join("")}<button class="btn gold" id="clkGo">${clkRun?"إيقاف":"ابدأ"}</button></div></div>
+  <div class="tray" style="flex-direction:column;align-items:stretch;justify-content:center;gap:14px">
+   <div class="fin">${TEAMS.map((t,k)=>`<button style="--c:${t.c}" class="${T.fin[k]?"done":""}" data-f="${k}">${T.fin[k]?"✓ ":""}${t.name}: ${T.fin[k]?"انتهى":"يخطط…"}</button>`).join("")}</div>
+   <div class="ctrls"><button class="btn" id="printBtn">🖨 اطبع ورقة التخطيط</button></div></div></div>`;
+ bottomEl.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{ if(clkRun) return; T.min=+b.dataset.m; save(); renderStudio(n); });
+ bottomEl.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>{ const k=+b.dataset.f; T.fin[k]=!T.fin[k]; save(); renderStudio(n); if(T.fin.every(Boolean)) toast("انتهت الفرق الثلاث. انتقلوا إلى العرض."); });
+ $("printBtn").onclick=()=>window.print();
+ $("clkGo").onclick=()=>{ if(clkRun){ stopClock(); renderStudio(n); return; } clkRun=true; renderStudio(n);
+  clk=setInterval(()=>{ clkLeft--; const c=$("bigclock"); if(c){ c.textContent=mmss(clkLeft); c.classList.toggle("low",clkLeft<=60); } if(clkLeft<=0){ stopClock(); toast("انتهى الوقت. الأقلام جانباً."); const b=$("clkGo"); if(b) b.textContent="ابدأ"; } },1000); };
+}
+
+/* ---------- العرض: لوحة رسم لكل فريق ---------- */
+const pads=[null,null,null]; let padColor="#1a1a1a";
+function renderPresent(n){
+ const P=S.present; const team=TEAMS[P.team];
+ storyEl.innerHTML=`${kickHTML(n)}<h2>${n.title}</h2><div class="scroll"><p class="narr">${n.text}</p>
+  <ol class="check"><li><b>1</b><span>ما فكرة تطبيقكم؟</span></li><li><b>2</b><span>ما أهدافه؟</span></li><li><b>3</b><span>لمن صممتموه؟</span></li><li><b>4</b><span>كيف ترتبط شاشاته، وكيف يصل المشجع إلى مقعده؟</span></li></ol></div>`;
+ $("viewtools").hidden=true;
+ overlay.innerHTML=`<div class="dim" style="background:#0b1828"></div><div class="padwrap"><div class="frames lbl-pad"><div><span>الرئيسية</span></div><div><span>التذكرة</span></div><div><span>الطريق إلى المقعد</span></div></div><canvas id="pad" width="1084" height="576"></canvas></div>
+  <div class="padbar">${TEAMS.map((t,k)=>`<button class="btn tb ${k===P.team?"on":""}" style="--c:${t.c}" data-pt="${k}">${t.name}</button>`).join("")}
+   <span style="flex:1"></span>${["#1a1a1a","#2a6fdb","#d33b2c","#1b8a4a"].map(c=>`<button class="sw ${c===padColor?"on":""}" style="background:${c}" data-c="${c}" aria-label="لون"></button>`).join("")}
+   <button class="btn tb" id="padClear">امسح</button></div>`;
+ const cv=$("pad"), g=cv.getContext("2d"); g.lineCap="round"; g.lineJoin="round";
+ const load=k=>{ g.clearRect(0,0,cv.width,cv.height); let src=pads[k]; if(!src){ try{src=localStorage.getItem(KEY+"-pad"+k);}catch(e){} } if(src){ const im=new Image(); im.onload=()=>g.drawImage(im,0,0); im.src=src; } };
+ const store=k=>{ pads[k]=cv.toDataURL(); try{localStorage.setItem(KEY+"-pad"+k,pads[k]);}catch(e){} };
+ load(P.team);
+ let drawing=false;
+ const pos=e=>{ const r=cv.getBoundingClientRect(); return [(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height]; };
+ cv.onpointerdown=e=>{ drawing=true; cv.setPointerCapture(e.pointerId); const [x,y]=pos(e); g.strokeStyle=padColor; g.lineWidth=5; g.beginPath(); g.moveTo(x,y); g.lineTo(x+0.1,y); g.stroke(); };
+ cv.onpointermove=e=>{ if(!drawing) return; const [x,y]=pos(e); g.lineTo(x,y); g.stroke(); };
+ cv.onpointerup=cv.onpointercancel=()=>{ if(!drawing) return; drawing=false; store(P.team); };
+ overlay.querySelectorAll("[data-pt]").forEach(b=>b.onclick=()=>{ store(P.team); P.team=+b.dataset.pt; save(); renderPresent(n); });
+ overlay.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{ padColor=b.dataset.c; overlay.querySelectorAll(".sw").forEach(s=>s.classList.toggle("on",s===b)); });
+ $("padClear").onclick=()=>{ g.clearRect(0,0,cv.width,cv.height); store(P.team); };
+ if(!clkRun) clkLeft=120;
+ bottomEl.innerHTML=`<div class="act"><div class="turn" style="--c:${team.c}"><small>يعرض الآن</small><b>${team.name}</b><div class="bigclock" id="bigclock" style="font-size:60px">${mmss(clkLeft)}</div></div>
+  <div class="tray"><button class="btn gold" id="clkGo" style="font-size:26px;padding:12px 30px">${clkRun?"إيقاف":"ابدأ مؤقت الدقيقتين"}</button>
+   <button class="btn" id="nextTeam" style="font-size:24px;padding:12px 26px">الفريق التالي ←</button></div></div>`;
+ $("clkGo").onclick=()=>{ if(clkRun){ stopClock(); renderPresent(n); return; } clkRun=true; $("clkGo").textContent="إيقاف";
+  clk=setInterval(()=>{ clkLeft--; const c=$("bigclock"); if(c){ c.textContent=mmss(clkLeft); c.classList.toggle("low",clkLeft<=20); } if(clkLeft<=0){ stopClock(); toast(`انتهى وقت ${team.name}.`); const b=$("clkGo"); if(b) b.textContent="ابدأ مؤقت الدقيقتين"; } },1000); };
+ $("nextTeam").onclick=()=>{ store(P.team); stopClock(); P.team=(P.team+1)%3; save(); renderPresent(n); };
+}
+
+/* ---------- تقييم اللجنة ---------- */
+function renderRubric(n){
+ const U=S.rub; const tot=k=>U.v[k].reduce((a,b)=>a+b,0);
+ storyEl.innerHTML=`${kickHTML(n)}<h2>${n.title}</h2><div class="scroll">
+  <table class="rub"><thead><tr><th>المعيار</th>${TEAMS.map(t=>`<th style="color:${t.c}">${t.name}</th>`).join("")}</tr></thead><tbody>
+  ${RUBRIC.map((r,i)=>`<tr><td><b>${r.t}</b><small>${r.d}</small></td>${TEAMS.map((_,k)=>`<td><span class="stars ${U.done?"locked":""}">${[1,2,3,4,5].map(s=>`<button class="${U.v[k][i]>=s?"on":""}" data-k="${k}" data-i="${i}" data-s="${s}" aria-label="${s} نجوم">★</button>`).join("")}</span></td>`).join("")}</tr>`).join("")}
+  </tbody><tfoot><tr><td>النقاط</td>${TEAMS.map((t,k)=>`<td style="color:${t.c}">${tot(k)*P_STAR}</td>`).join("")}</tr></tfoot></table></div>`;
+ storyEl.querySelectorAll(".stars button").forEach(b=>b.onclick=()=>{ if(U.done) return; const k=+b.dataset.k,i=+b.dataset.i,s=+b.dataset.s; U.v[k][i]=U.v[k][i]===s?0:s; save(); renderRubric(n); });
+ const ready=U.v.every(r=>r.every(x=>x>0));
+ bottomEl.innerHTML=`<div class="act"><div class="turn" style="--c:var(--gold)">${U.done?`<b style="color:var(--ok)">✓ اعتُمد التقييم</b><small>اضغط التالي</small>`:`<small>اللجنة: المعلم والفريقان الآخران</small><b style="font-size:24px">${n.text}</b><small>${ready?"التقييم جاهز للاعتماد":"أكملوا النجوم لكل فريق"}</small>`}</div>
+  <div class="tray">${U.done?TEAMS.map((t,k)=>`<span class="narr" style="color:${t.c}">${t.name}: +${U.v[k].reduce((a,b)=>a+b,0)*P_STAR}</span>`).join(" · "):`<button class="btn gold" id="rubGo" style="font-size:28px;padding:14px 34px" ${ready?"":"disabled"}>اعتمد التقييم</button>`}</div></div>`;
+ if(!U.done) $("rubGo").onclick=()=>{ if(!ready) return; U.done=true; const bump=[]; TEAMS.forEach((_,k)=>{ const p=U.v[k].reduce((a,b)=>a+b,0)*P_STAR; S.scores[k]+=p; S.log.rub[k]=p; bump.push(k); }); save(); renderRubric(n); renderScores(bump); updateNext(); toast("اعتمدت اللجنة التقييم."); };
+}
+
+/* ---------- إعلان الفائز من مجموع الجولات ---------- */
+function roundScores(){ return ROUNDS.map(r=>{ try{ const v=JSON.parse(localStorage.getItem(r.key)||"null"); return v&&Array.isArray(v.scores)?v.scores:null; }catch(e){ return null; } }); }
+function renderFinal(n){
+ const rs=roundScores(); const all=[...rs,S.scores];
+ const total=TEAMS.map((_,k)=>all.reduce((a,s)=>a+(s?s[k]:0),0));
+ const top=Math.max(...total); const winners=TEAMS.map((t,k)=>k).filter(k=>total[k]===top&&top>0);
+ const missing=rs.some(s=>!s);
+ winnerText=winners.length===1?TEAMS[winners[0]].name:winners.length>1?"تعادل":"—"; winnerColor=winners.length===1?TEAMS[winners[0]].c:"#f0b84a"; paintPlate();
+ const head=["الجولة الأولى","الجولة الثانية","الجولة الثالثة","الختامية"];
+ storyEl.innerHTML=`<div class="kick"><span class="tag">نهاية المناقصة</span></div><h2>${n.title}</h2><div class="scroll"><p class="narr">${n.text}</p>
+  <table class="sum" style="font-size:20px"><thead><tr><th>الشركة</th>${head.map(h=>`<th>${h}</th>`).join("")}<th>المجموع</th></tr></thead><tbody>
+  ${TEAMS.map((t,k)=>`<tr><td style="color:${t.c};font-weight:700;white-space:nowrap">${t.name}</td>${all.map(s=>`<td>${s?s[k]:"—"}</td>`).join("")}<td style="font-family:var(--display);font-size:30px;color:${t.c}">${total[k]}</td></tr>`).join("")}</tbody></table>
+  ${missing?`<p class="narr" style="color:var(--muted);font-size:17px">«—» تعني أن الجولة لم تُلعب على هذا الجهاز وهذا المتصفح، فلم تُحسب نقاطها.</p>`:""}
+  <p class="narr" style="color:var(--gold)">${winners.length===1?`🏆 فازت ${TEAMS[winners[0]].name} بمناقصة تطبيق «من الفندق إلى المقعد».`:winners.length>1?`🏆 تعادل: ${winners.map(k=>TEAMS[k].name).join(" و")}.`:"لم تُسجّل نقاط بعد."}</p></div>`;
+ bottomEl.innerHTML=`<div class="teams">${TEAMS.map((t,k)=>`<div class="team" style="--c:${t.c}"><h4>${t.name}<span class="st ${winners.includes(k)?"ok":""}">${winners.includes(k)?"🏆 الفائز":""}</span></h4><div class="cons">المجموع: ${total[k]} نقطة · تقييم اللجنة: ${S.log.rub[k]}</div><div class="cons" style="color:var(--gold)">${n.exit}</div></div>`).join("")}</div>`;
+}
+
+/* ---------- التنقل ---------- */
+function go(id){ S.hist.push(S.node); S.node=id; render(); }
+$("nextBtn").onclick=()=>{ const n=NODES[S.node]; if(n.type==="final"){askReset();return;} if($("nextBtn").disabled) return;
+ let right=0; if(n.type==="dec") right=decState(S.node).c.filter(c=>c===n.ans).length; go(n.next({right})); };
+$("prevBtn").onclick=()=>{ if(!S.hist.length) return; S.node=S.hist.pop(); render(); };
+$("revealBtn").onclick=doReveal;
+let resetArmed=false;
+function askReset(){ const b=$("resetBtn"); if(!resetArmed){ resetArmed=true; b.textContent="اضغط للتأكيد"; b.classList.add("gold"); setTimeout(()=>{resetArmed=false;b.textContent="بداية جديدة";b.classList.remove("gold");},3500); return; }
+ resetArmed=false; S=fresh(); [0,1,2].forEach(k=>{pads[k]=null; try{localStorage.removeItem(KEY+"-pad"+k);}catch(e){}}); b.textContent="بداية جديدة"; b.classList.remove("gold"); render(); }
+$("resetBtn").onclick=askReset;
+let tId=null,tLeft=0; function stopTimer(){ if(tId){clearInterval(tId);tId=null;} }
+$("timerBtn").onclick=()=>{ stopTimer(); tLeft=60; tickT(); tId=setInterval(()=>{tLeft--;tickT();if(tLeft<=0)stopTimer();},1000); };
+function tickT(){ const v=$("timerView"); v.textContent=tLeft>0?`0:${String(tLeft).padStart(2,"0")}`:"انتهى"; v.classList.toggle("low",tLeft<=10); }
+$("spinBtn").onclick=()=>{ spin=!spin; $("spinBtn").textContent=spin?"إيقاف التدوير":"تدوير المشهد"; };
+document.addEventListener("keydown",e=>{ if(e.key==="ArrowLeft") $("nextBtn").click(); else if(e.key==="ArrowRight") $("prevBtn").click(); else if(e.key===" "){ e.preventDefault(); doReveal(); } });
+
+fit(); init3D(); render();
+</script>
+</body>
+</html>

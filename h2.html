@@ -1,0 +1,691 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>مناقصة كأس العالم 2034 · الجولة الثانية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@500;700&family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap">
+<style>
+
+/* مسرح ثابت 1920×1080 يتمدد ليملأ أي شاشة. ملعب ليلي، وذهب الكأس للتمييز، ولكل فريق لونه */
+:root{
+  --bg:#08131f; --panel:#0f2133; --panel2:#152d45; --line:#24486a;
+  --fg:#eef3f8; --muted:#93abc2; --gold:#f0b84a; --ok:#3ccf86; --bad:#ef6450;
+  --t1:#4aa8ff; --t2:#3fd08a; --t3:#ff9a3c;
+  --display:"Reem Kufi","Tahoma",sans-serif;
+  --body:"IBM Plex Sans Arabic","Tahoma","Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--bg)}
+body{color:var(--fg);font-family:var(--body);-webkit-user-select:none;user-select:none}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+[hidden]{display:none!important}
+
+#stage{position:absolute;width:1920px;height:1080px;transform-origin:0 0;
+  background:radial-gradient(1200px 600px at 30% 0%,#173756 0,transparent 70%),radial-gradient(900px 500px at 100% 100%,#122a1f 0,transparent 70%),var(--bg);
+  font-size:26px;line-height:1.55;overflow:hidden}
+
+/* الرأس */
+.head{position:absolute;inset:0 0 auto 0;height:96px;display:flex;align-items:center;gap:28px;padding:0 36px;border-bottom:1px solid var(--line)}
+.brand{font-family:var(--display);font-size:38px;line-height:1.1;white-space:nowrap}
+.brand small{display:block;font-family:var(--body);font-size:18px;color:var(--muted)}
+.brand b{color:var(--gold)}
+.steps{flex:1;display:flex;gap:6px;align-items:center;justify-content:center;min-width:0}
+.steps span{height:8px;flex:1;max-width:90px;border-radius:4px;background:var(--line)}
+.steps span.done{background:var(--muted)}
+.steps span.on{background:var(--gold)}
+.scores{display:flex;gap:12px}
+.chip{display:flex;align-items:center;gap:10px;background:var(--panel);border:2px solid var(--c);border-radius:999px;padding:6px 18px;font-weight:700;font-size:22px;transition:transform .25s}
+.chip i{width:14px;height:14px;border-radius:50%;background:var(--c)}
+.chip .pts{font-family:var(--display);font-size:28px;color:var(--c);min-width:2.4ch;text-align:center;font-variant-numeric:tabular-nums}
+.chip.bump{transform:scale(1.12)}
+
+/* لوحة القصة */
+.story{position:absolute;top:116px;right:36px;width:740px;height:640px;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:30px 34px;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+.kick{display:flex;gap:10px;flex-wrap:wrap;font-size:18px;color:var(--muted)}
+.tag{border:1px solid var(--line);border-radius:999px;padding:2px 14px}
+.tag.obj{border-color:var(--gold);color:var(--gold)}
+.tag.branch{border-color:var(--bad);color:var(--bad)}
+.story h2{margin:0;font-family:var(--display);font-size:48px;line-height:1.2;text-wrap:balance}
+.story p{margin:0}
+.narr{font-size:25px}
+.q{font-weight:700;color:var(--gold);font-size:27px}
+.opts{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+.opts li{display:flex;gap:14px;align-items:flex-start;background:var(--panel2);border:2px solid transparent;border-radius:12px;padding:8px 14px;font-size:23px;line-height:1.4}
+.opts li b{font-family:var(--display);color:var(--gold);min-width:1.2em;font-size:26px}
+.opts li.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 16%,var(--panel2))}
+.why{margin-top:auto;border-inline-start:5px solid var(--ok);background:var(--panel2);border-radius:10px;padding:12px 16px;font-size:21px;line-height:1.5}
+.why b{color:var(--ok)}
+.why .src{color:var(--muted);font-size:18px}
+.scroll{overflow:auto;min-height:0;display:flex;flex-direction:column;gap:14px}
+
+/* العرض ثلاثي الأبعاد */
+.view{position:absolute;top:116px;left:36px;width:1084px;height:640px;border-radius:22px;border:1px solid var(--line);overflow:hidden;background:radial-gradient(ellipse at 50% 30%,#14304a 0,#09172a 75%)}
+.view canvas{display:block;touch-action:none}
+.lbl{position:absolute;transform:translate(-100%,-50%);margin-left:-14px;font-family:var(--display);font-size:22px;padding:4px 14px;border-radius:10px;background:rgba(6,16,28,.86);border:2px solid var(--line);white-space:nowrap;pointer-events:none;transition:opacity .3s}
+.lbl.drop{pointer-events:auto;border-style:dashed;border-color:var(--gold);color:var(--muted);min-width:170px;text-align:center}
+.lbl.drop.hot{background:rgba(240,184,74,.25)}
+.lbl.ok{border-color:var(--ok);color:var(--fg)}
+.viewtools{position:absolute;bottom:16px;left:16px;display:flex;gap:10px}
+.fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--muted);padding:40px}
+.zone{position:absolute;width:300px;border:3px dashed var(--c);border-radius:18px;background:color-mix(in srgb,var(--c) 10%,transparent);padding:14px;display:flex;flex-direction:column;gap:8px;align-items:center}
+.zone h5{margin:0;font-family:var(--display);font-size:26px;color:var(--c)}
+.zone .got{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;font-size:17px}
+.zone .got span{background:var(--panel2);border-radius:8px;padding:2px 10px}
+.zone.hot{background:color-mix(in srgb,var(--c) 28%,transparent)}
+.toast{position:absolute;top:24px;left:50%;transform:translateX(-50%);background:rgba(6,16,28,.92);border:2px solid var(--gold);border-radius:14px;padding:10px 22px;font-size:22px;max-width:90%;text-align:center;pointer-events:none;transition:opacity .3s}
+.apptap{position:absolute;display:flex;gap:14px;bottom:80px;left:50%;transform:translateX(-50%)}
+.apptap button{width:86px;height:86px;border-radius:22px;font-size:16px;font-weight:700;line-height:1.2;box-shadow:0 6px 0 rgba(0,0,0,.35)}
+
+/* الفرق */
+.bottom{position:absolute;top:776px;right:36px;left:36px;height:220px}
+.teams{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;height:100%}
+.team{background:var(--panel);border:3px solid var(--c);border-radius:18px;padding:12px 16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.team h4{margin:0;display:flex;justify-content:space-between;align-items:center;font-family:var(--display);color:var(--c);font-size:30px}
+.st{font-family:var(--body);font-size:19px;font-weight:700;color:var(--muted)}
+.st.ok{color:var(--ok)} .st.bad{color:var(--bad)}
+.picks{display:flex;gap:10px}
+.picks button{flex:1;height:76px;border-radius:14px;background:var(--panel2);border:3px solid var(--line);font-family:var(--display);font-size:40px;transition:transform .1s}
+.picks button:active{transform:scale(.96)}
+.picks.locked button{cursor:default}
+.picks button.sel{background:var(--c);color:#06121d;border-color:var(--c)}
+.picks button.right{border-color:var(--ok)}
+.cons{font-size:20px;line-height:1.45;color:var(--fg);overflow:auto}
+.team.lockedin{box-shadow:0 0 0 6px color-mix(in srgb,var(--c) 25%,transparent)}
+
+/* الأنشطة */
+.act{display:flex;gap:20px;height:100%}
+.turn{width:330px;flex:none;background:var(--panel);border:3px solid var(--c);border-radius:18px;padding:16px;display:flex;flex-direction:column;justify-content:center;gap:6px;text-align:center}
+.turn small{color:var(--muted);font-size:20px}
+.turn b{font-family:var(--display);font-size:40px;color:var(--c)}
+.tray{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-wrap:wrap;gap:12px;align-content:center;justify-content:center}
+.card{background:var(--panel2);border:2px solid var(--line);border-radius:14px;padding:10px 18px;font-size:22px;font-weight:700;cursor:grab;touch-action:none;max-width:420px;text-align:center;line-height:1.35}
+.card.dragging{opacity:.3}
+.ghost{position:fixed;z-index:99;pointer-events:none;background:var(--panel2);border:3px solid var(--gold);border-radius:14px;padding:10px 18px;font-family:var(--body);font-size:22px;font-weight:700;color:var(--fg);transform:translate(-50%,-50%) rotate(-2deg);box-shadow:0 10px 30px rgba(0,0,0,.5);direction:rtl}
+
+/* جدول الفروق */
+.tbl{width:100%;border-collapse:separate;border-spacing:6px;font-size:18px;table-layout:fixed}
+.tray.small .card{font-size:16px;padding:6px 12px;max-width:330px;border-radius:10px}
+.tray{overflow:auto}
+.tbl th{font-family:var(--display);font-size:22px;color:var(--gold);font-weight:500}
+.tbl td.k{font-weight:700;color:var(--muted);width:120px;font-size:17px;line-height:1.3}
+.cell{height:66px;font-size:16px;border:2px dashed var(--line);border-radius:12px;padding:6px 10px;vertical-align:middle;text-align:center;line-height:1.3}
+.cell.hot{border-color:var(--gold);background:rgba(240,184,74,.15)}
+.cell.ok{border:2px solid var(--ok);background:color-mix(in srgb,var(--ok) 12%,transparent)}
+
+/* التحكم */
+.ctrl{position:absolute;bottom:14px;right:36px;left:36px;height:0}
+.ctrlbar{position:absolute;top:116px;left:36px}
+.btn{background:var(--panel2);border:2px solid var(--line);border-radius:12px;padding:8px 22px;font-weight:700;font-size:22px}
+.btn:hover{border-color:var(--gold)}
+.btn.gold{background:var(--gold);color:#1a1405;border-color:var(--gold)}
+.btn:disabled{opacity:.35;cursor:default}
+.nav{position:absolute;bottom:12px;left:36px;display:flex;gap:12px;align-items:center}
+.nav .timer{font-family:var(--display);font-size:30px;min-width:3.4ch;text-align:center;font-variant-numeric:tabular-nums}
+.nav .timer.low{color:var(--bad)}
+
+/* الشاشة الافتتاحية والختامية */
+.big{font-family:var(--display);font-size:64px;line-height:1.15;margin:0;text-wrap:balance}
+.big b{color:var(--gold)}
+.sum{width:100%;border-collapse:collapse;font-size:24px}
+.sum th,.sum td{padding:10px;border-bottom:1px solid var(--line);text-align:center;font-variant-numeric:tabular-nums}
+.sum th:first-child,.sum td:first-child{text-align:right}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ===== إضافات الحصة الثانية ===== */
+.dim{position:absolute;inset:0;background:rgba(6,14,24,.9);backdrop-filter:blur(2px)}
+.mocks{position:absolute;inset:64px 0 0;display:flex;align-items:center;justify-content:center;gap:80px}
+.mockwrap{display:flex;flex-direction:column;align-items:center;gap:6px}
+.mockwrap h6{margin:0;font-family:var(--display);font-size:22px;line-height:1.2;color:var(--gold);font-weight:500}
+.mock{position:relative;width:256px;height:500px;border-radius:38px;border:10px solid #050b12;background:#fff;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.55);font-family:var(--body);direction:rtl;color:#111}
+.mock.off{opacity:.35;pointer-events:none;filter:grayscale(.6)}
+.mock .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:90px;height:18px;background:#050b12;border-radius:0 0 12px 12px;z-index:5}
+/* التطبيق أ: مزدحم */
+.appA{height:100%;background:linear-gradient(160deg,#ff3cac,#784ba0 40%,#2b86c5);display:flex;flex-direction:column}
+.appA .bar{display:flex;justify-content:space-between;align-items:center;padding:24px 12px 8px;color:#fff;font-weight:700;font-size:15px}
+.appA .ad{margin:6px 10px;background:#ffeb3b;color:#d50000;font-weight:800;font-size:13px;text-align:center;border-radius:6px;padding:6px;animation:blink .9s infinite}
+@keyframes blink{50%{background:#ff9800;color:#fff}}
+.appA .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:8px 10px;flex:1;align-content:start}
+.appA .tiles button{height:64px;border-radius:10px;font-size:12px;font-weight:700;color:#fff;line-height:1.2;padding:2px}
+.appA .sheet{position:absolute;inset:auto 0 0 0;background:#fff;border-radius:18px 18px 0 0;padding:14px;display:flex;flex-direction:column;gap:6px;box-shadow:0 -8px 20px rgba(0,0,0,.3)}
+.appA .sheet button{text-align:right;padding:10px;border-radius:8px;background:#f1f1f6;font-size:14px;font-weight:600;color:#333}
+.appA .pop{position:absolute;inset:150px 18px auto;background:#111;color:#ffeb3b;border-radius:12px;padding:16px;text-align:center;font-weight:800;font-size:15px;z-index:4}
+.appA .pop button{margin-top:10px;background:#ffeb3b;color:#111;border-radius:8px;padding:6px 14px;font-weight:800}
+/* التطبيق ب: بسيط */
+.appB{height:100%;background:#f4f7fb;display:flex;flex-direction:column;gap:12px;padding:30px 16px 16px}
+.appB .t{font-size:22px;font-weight:800;color:#0d1b2a}
+.appB .tk{background:#0f3a5c;color:#fff;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:2px}
+.appB .tk small{opacity:.8}
+.appB .img{height:90px;border-radius:14px;background:linear-gradient(#2a8a55,#14552f);position:relative;overflow:hidden}
+.appB .img::after{content:"";position:absolute;inset:18px 30px;border:3px solid rgba(255,255,255,.7);border-radius:6px}
+.appB .search{background:#fff;border:2px solid #cfd8e3;border-radius:12px;padding:10px;color:#8a97a6;font-size:14px}
+.appB .big{background:#f0b84a;color:#1a1405;border-radius:14px;padding:14px;font-size:19px;font-weight:800}
+.appB .sm{background:#e6ecf3;color:#0d1b2a;border-radius:12px;padding:10px;font-size:15px;font-weight:700}
+.win{position:absolute;inset:0;background:rgba(10,40,24,.92);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-weight:800;font-size:22px;z-index:6}
+.win b{font-family:var(--display);font-size:64px;color:#3ccf86}
+.trialbar{position:absolute;top:12px;right:24px;left:24px;height:48px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.trialbar .who{font-family:var(--display);font-size:26px}
+.trialbar .clock{font-family:var(--display);font-size:40px;font-variant-numeric:tabular-nums;color:var(--gold);min-width:4ch;text-align:center}
+.rtable{width:100%;border-collapse:collapse;font-size:22px;font-variant-numeric:tabular-nums}
+.rtable th,.rtable td{padding:8px;border-bottom:1px solid var(--line);text-align:center}
+.rtable th:first-child,.rtable td:first-child{text-align:right}
+.rtable .cur{background:rgba(240,184,74,.12)}
+/* تشريح الواجهة */
+.anat{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.anat .mock{width:330px;height:600px}
+.anat [data-drop]{outline:3px dashed transparent;outline-offset:3px;transition:outline-color .2s}
+.anat .armed [data-drop]{outline-color:rgba(240,184,74,.75)}
+.anat [data-drop].hot{outline-color:#f0b84a;background-color:rgba(240,184,74,.25)}
+.tagon{position:absolute;transform:translate(-100%,-50%);background:var(--ok);color:#06121d;font-weight:800;font-size:18px;border-radius:8px;padding:2px 10px;white-space:nowrap;pointer-events:none}
+/* خط الإنتاج */
+.pipe{display:grid;gap:7px;margin-top:6px}
+.slot{display:grid;grid-template-columns:44px 1fr;gap:10px;align-items:center;border:2px dashed var(--line);border-radius:12px;padding:5px 10px;min-height:58px}
+.slot .n{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;font-family:var(--display);font-size:22px;background:var(--panel2);color:var(--muted)}
+.slot.hot{border-color:var(--gold);background:rgba(240,184,74,.12)}
+.slot.ok{border:2px solid var(--ok);background:color-mix(in srgb,var(--ok) 10%,transparent)}
+.slot.ok .n{background:var(--ok);color:#06121d}
+.slot .d{font-size:14.5px;line-height:1.35;color:var(--muted)}
+.slot .d b{display:block;color:var(--fg);font-size:19px}
+</style>
+</head>
+<body>
+<div id="stage">
+  <header class="head">
+    <div class="brand">مناقصة كأس العالم <b>2034</b><small>الجولة الثانية: تجربة المشجع · التقنية الرقمية · ص 115–116</small></div>
+    <div class="steps" id="steps"></div>
+    <div class="scores" id="scores"></div>
+  </header>
+  <section class="story" id="story"></section>
+  <section class="view" id="view">
+    <div id="overlay"></div>
+    <div class="toast" id="toast" style="opacity:0"></div>
+    <div class="viewtools" id="viewtools"><button class="btn" id="spinBtn">تدوير الجوال</button></div>
+  </section>
+  <section class="bottom" id="bottom"></section>
+  <nav class="nav">
+    <a class="btn" href="index.html" style="text-decoration:none">الرئيسية</a>
+    <button class="btn" id="prevBtn">→ السابق</button>
+    <button class="btn" id="timerBtn">مؤقت النقاش</button><span class="timer" id="timerView"></span>
+    <button class="btn gold" id="revealBtn">اكشف القرارات</button>
+    <button class="btn gold" id="nextBtn">التالي ←</button>
+    <button class="btn" id="resetBtn">بداية جديدة</button>
+  </nav>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+"use strict";
+/* ====================================================================
+   البيانات (الكتاب ص 115–116، الأهداف 7–12)
+   ==================================================================== */
+const TEAMS=[{name:"الفريق الأول",c:"#4aa8ff"},{name:"الفريق الثاني",c:"#3fd08a"},{name:"الفريق الثالث",c:"#ff9a3c"}];
+const LET=["أ","ب","ج","د"];
+const P_DEC=10, P_DRAG=5;
+const CHAPTERS=["intro","d1","pipeline","crash","zero","trial","dui","anatomy","dux","specs","end"];
+const PARENT={r1:"d1",r2:"dux"};
+const STAGES=[
+ {t:"التخطيط والتصميم",d:"حدد الفكرة، والهدف من التطبيق، والفئة المستهدفة منه. أنشئ مخططاً يدوياً للتطبيق يشمل واجهات المستخدم المختلفة وكيفية ارتباطها مع بعضها."},
+ {t:"التطوير (التنفيذ)",d:"استخدم أحد برامج تطوير تطبيقات الهواتف الذكية لتنفيذ التصميم الذي توصلت إليه في المرحلة السابقة."},
+ {t:"الاختبار",d:"اختبر التطبيق وعالج أي مشاكل قد تظهر في البرمجة أو التصميم، ثم أضف اللمسات الأخيرة إلى عملك."},
+ {t:"النشر والتسويق",d:"اعتمد التطبيق وحمّله في متجر التطبيقات."}
+];
+
+const NODES={
+ intro:{type:"intro",title:"المشجع أولاً",
+  text:"اجتازت الشركات الثلاث جولة البنية التحتية. اللجنة الآن تريد أن ترى كيف ستفكر كل شركة في المشجع: ما التطبيق الذي ستبنيه له، وكيف ستبنيه، وكيف سيستخدمه رجل في السبعين وصل من اليابان لأول مرة.",
+  scene:"home", next:()=>"d1"},
+
+ d1:{type:"dec",obj:7,page:115,title:"السطر الأول في الملف",
+  text:"اللجنة تفتح ملف المناقصة، وتطلب من كل شركة أن تكتب في سطره الأول تعريفاً دقيقاً لما ستبنيه.",
+  q:"تطبيق المشجعين هو:",
+  opts:["برنامج نظام يدير جوال المشجع","نوع من البرامج التطبيقية صُمم ليعمل على الأجهزة المحمولة مثل الهواتف الذكية والأجهزة اللوحية","موقع إلكتروني يعمل على الحاسب المكتبي فقط","جزء من نظام التشغيل أندرويد"],ans:1,
+  cons:["كتبتم «برنامج نظام»… فاعترضت اللجنة: التطبيق لا يدير الجهاز، بل يخدم المشجع.",
+        "قبلت اللجنة تعريفكم، وظهر تطبيقكم على شاشة الجوال بين تطبيقات المشجع الأخرى.",
+        "اللجنة تذكّركم: المشجع في الملعب يحمل جوالاً، لا حاسباً مكتبياً.",
+        "التطبيق يعمل فوق أندرويد، لكنه ليس جزءاً منه."],
+  why:"تطبيقات الهواتف الذكية (Mobile application) نوع من البرامج التطبيقية تم تصميمها لكي تعمل على الأجهزة المحمولة مثل الهواتف الذكية والأجهزة اللوحية. من أمثلتها: البريد الإلكتروني، والتواصل الاجتماعي، والرسائل الفورية، والخرائط، والتطبيقات الحكومية.",
+  scene:"black", onReveal:"home", next:s=>s.right>=2?"pipeline":"r1"},
+
+ r1:{type:"dec",branch:true,obj:7,page:115,title:"شاشة المشجع",
+  text:"اللجنة تعرض شاشة جوال مشجع وتسأل: ما الذي على هذه الشاشة يُعدّ تطبيق هاتف ذكي؟",
+  q:"أيهما تطبيق هاتف ذكي؟",
+  opts:["نظام أندرويد الذي يشغّل الجوال","تطبيق الخرائط الذي يرشد المشجع إلى الملعب"],ans:1,
+  cons:["أندرويد نظام تشغيل: برنامج نظام يدير الجوال، وليس تطبيقاً يؤدي مهمة للمشجع.","تطبيق الخرائط برنامج تطبيقي صُمم ليعمل على الجوال ويؤدي مهمة محددة للمستخدم."],
+  why:"تطبيق الهاتف الذكي برنامج تطبيقي يؤدي مهمة للمستخدم على جهاز محمول، أما أندرويد فبرنامج نظام يدير الجهاز.",
+  scene:"home", next:()=>"pipeline"},
+
+ pipeline:{type:"drag",mode:"pipeline",obj:8,page:115,title:"الجدول الزمني",
+  text:"اللجنة تريد جدولاً زمنياً لبناء التطبيق. في كل دور يسحب فريق مرحلة إلى ترتيبها، وشاهدوا التطبيق يُبنى على الجوال.",
+  items:STAGES.map((s,i)=>({t:s.t,k:i})),
+  done:"مراحل إنشاء تطبيقات الهواتف الذكية: أولاً التخطيط والتصميم، ثانياً التطوير (التنفيذ)، ثالثاً الاختبار، رابعاً النشر والتسويق.",
+  scene:"pipeline", next:()=>"crash"},
+
+ crash:{type:"dec",obj:8,page:115,title:"ليلة الانهيار",
+  text:"شركة منافسة استعجلت، فنشرت تطبيقها مباشرة بعد التطوير. في مباراة تجريبية دخل خمسون ألف مشجع في اللحظة نفسها… وتوقف التطبيق أمام الجميع.",
+  q:"أي مرحلة تجاوزتها الشركة المنافسة؟",
+  opts:["التخطيط والتصميم","الاختبار","النشر والتسويق","التطوير"],ans:1,
+  cons:["خططت الشركة جيداً، والمشكلة ظهرت بعد البناء لا قبله.",
+        "أصبتم: لو اختُبر التطبيق تحت ضغط آلاف المستخدمين لاكتُشفت المشكلة وعولجت قبل النشر.",
+        "التطبيق نُشر فعلاً، والمشكلة أنه نُشر قبل أن يُختبر.",
+        "التطبيق طُوّر وكان يعمل، لكن أحداً لم يتأكد من أدائه قبل النشر."],
+  why:"مرحلة الاختبار: اختبر التطبيق وعالج أي مشاكل قد تظهر في البرمجة أو التصميم، ثم أضف اللمسات الأخيرة إلى عملك.",
+  scene:"crash", onReveal:"calm", next:()=>"zero"},
+
+ zero:{type:"dec",obj:8,page:115,title:"صفر تحميل",
+  text:"شركة ثانية فعلت كل شيء صحيحاً: خططت وطوّرت واختبرت. قبل الافتتاح بشهر التطبيق جاهز ويعمل بلا أخطاء… لكن عدّاد التحميل: صفر.",
+  q:"أي مرحلة لم تكتمل؟",
+  opts:["التطوير","الاختبار","النشر والتسويق","التخطيط والتصميم"],ans:2,
+  cons:["التطبيق مطوَّر ويعمل؛ المشكلة أن أحداً لا يستطيع الوصول إليه.",
+        "التطبيق اجتاز الاختبار، لكنه بقي على أجهزة الشركة.",
+        "أصبتم: رُفع التطبيق إلى المتجر وسُوّق له، فبدأ العدّاد يرتفع.",
+        "التخطيط تمّ منذ البداية؛ الناقص هو الخطوة الأخيرة."],
+  why:"مرحلة النشر والتسويق: اعتمد التطبيق وحمّله في متجر التطبيقات.",
+  scene:"zero", onReveal:"downloads", next:()=>"trial"},
+
+ trial:{type:"trial",obj:"10 و11",page:116,title:"مختبر: جرّبوا التطبيقين",
+  text:"شركتان أرسلتا نموذجيهما. المهمة واحدة: «اعرض رقم بوابتي». يتقدم ممثل كل فريق ويجرّب التطبيق (أ) ثم التطبيق (ب)، والمؤقت يحسب الثواني.",
+  why:"التطبيق (أ) واجهته ملونة ومبهرة، لكن الوصول إلى البوابة صعب ومزعج: تجربة مستخدم ضعيفة. التطبيق (ب) بسيط ومنظم، فوصلتم بسرعة: تجربة مستخدم جيدة. واجهة جميلة لا تعني تجربة جيدة.",
+  scene:"mocks", next:()=>"dui"},
+
+ dui:{type:"dec",obj:9,page:116,title:"ما يراه المشجع",
+  text:"عادت الشركات إلى التطبيق (ب). على شاشته: زر «بوابتي»، وتسمية «مباراة الافتتاح»، ومربع نص للبحث عن المقعد، وصورة للملعب، وألوان متناسقة.",
+  q:"هذه العناصر كلها جزء من:",
+  opts:["تجربة المستخدم","واجهة المستخدم","نظام التشغيل","مرحلة النشر والتسويق"],ans:1,
+  cons:["التجربة هي ما يشعر به المشجع وهو يصل إلى حاجته؛ أما هذه العناصر فهي ما يراه ويلمسه.",
+        "أصبتم: الألوان والصور وعناصر التحكم التي يراها المشجع ويتفاعل معها هي واجهة المستخدم.",
+        "نظام التشغيل يعمل في الخلفية، والمشجع لا يراه.",
+        "النشر خطوة في بناء التطبيق، وليست شيئاً على الشاشة."],
+  why:"واجهة المستخدم (UI): تعتمد عملية تصميم واجهة التطبيق على تحقيق التوازن والتناسق بين عناصره بما تتضمنه من ألوان وصور وعناصر التحكم مثل التسميات (Labels) والأزرار (Buttons) ومربعات النص (Text Boxes). واجهة التطبيق هي ما يراه المستخدم ويتفاعل معه.",
+  scene:"good", next:()=>"anatomy"},
+
+ anatomy:{type:"drag",mode:"anatomy",obj:9,page:116,title:"تشريح الواجهة",
+  text:"قبل أن تعتمد اللجنة الشاشة، تريد اسماً لكل عنصر فيها. في كل دور، يسحب فريق اسم العنصر إلى مكانه في شاشة التطبيق.",
+  items:[{t:"التسمية (Label)",k:"label"},{t:"الزر (Button)",k:"button"},{t:"مربع النص (Text Box)",k:"text"},{t:"الصورة",k:"image"}],
+  done:"هذه عناصر واجهة المستخدم كما في الكتاب: الألوان والصور، وعناصر التحكم مثل التسميات والأزرار ومربعات النص.",
+  scene:"mocks", next:()=>"dux"},
+
+ dux:{type:"dec",obj:"10 و11",page:116,title:"المشجع التائه",
+  text:"في تجربة ميدانية، جرّب مشجع في السبعين من عمره وصل من اليابان التطبيق (أ). قال: «الألوان جميلة جداً… لكني لا أعرف أين أضغط لأصل إلى بوابتي.»",
+  q:"أين المشكلة؟",
+  opts:["في واجهة المستخدم: الألوان سيئة","في تجربة المستخدم: التطبيق لا يتجاوب مع حاجته ولا يوصله إليها بسهولة","في نظام تشغيل جواله","في سرعة الإنترنت في الملعب"],ans:1,
+  cons:["المشجع نفسه قال إن الألوان جميلة؛ الواجهة ليست المشكلة.",
+        "أصبتم: الواجهة جميلة، لكن تنظيم العناصر وآلية التحكم لا يوصلانه إلى حاجته بسهولة.",
+        "الجوال يعمل؛ المشكلة في طريقة تصميم التطبيق.",
+        "التطبيق فُتح بسرعة؛ المشكلة بدأت بعد أن فُتح."],
+  why:"تجربة المستخدم (UX): هي التي تشمل التنظيم الجيد للعناصر المرئية وآلية التحكم بالتطبيق، بالإضافة إلى مراعاة تجربة المستخدم والتي تشير إلى الاهتمام برغبات المستخدم وتوقعاته للوصول إلى احتياجاته بسهولة وفعالية. يجب أن يتم تصميم التطبيق بشكل يعطي المستخدم شعوراً إيجابياً عند استخدامه.",
+  scene:"bad", next:s=>s.right>=2?"specs":"r2"},
+
+ r2:{type:"dec",branch:true,obj:11,page:116,title:"الواجهة أم التجربة؟",
+  text:"اللجنة تقرأ عليكم تعليقين كتبهما مشجعان بعد تجربة التطبيق:",
+  q:"أي التعليقين يصف تجربة المستخدم؟",
+  opts:["«لون الزر أزرق جميل، والخط واضح.»","«وصلتُ إلى بوابتي بضغطتين، دون أن أسأل أحداً.»"],ans:1,
+  cons:["هذا وصف لما يراه المشجع: الألوان والخط. إنه واجهة المستخدم.","هذا وصف لوصول المشجع إلى حاجته بسهولة وشعوره بذلك. إنها تجربة المستخدم."],
+  why:"واجهة المستخدم ما يراه المستخدم ويتفاعل معه. وتجربة المستخدم مدى وصوله إلى احتياجاته بسهولة وفعالية، وشعوره عند الاستخدام.",
+  scene:"good", next:()=>"specs"},
+
+ specs:{type:"drag",mode:"specs",obj:12,page:116,title:"معايير اللجنة",
+  text:"اللجنة ستحكم في الجولة الختامية على واجهات الشركات. في كل دور، يسحب فريق عبارة: هل هي من مواصفات الواجهة الجيدة أم لا؟",
+  items:[{t:"منظمة بشكل جيد",k:"g"},{t:"مزدحمة بالإعلانات والعناصر",k:"b"},{t:"بسيطة",k:"g"},{t:"تعمل بكفاءة",k:"g"},{t:"ألوان كثيرة بلا تناسق",k:"b"},{t:"متجاوبة مع حاجات المستخدم",k:"g"},{t:"التذكرة بعد خمس شاشات",k:"b"},{t:"مرنة",k:"g"}],
+  done:"المواصفات العامة لإنشاء واجهة مستخدم جيدة تمنح تجربة مستخدم جيدة أيضاً: منظمة بشكل جيد، بسيطة، تعمل بكفاءة، متجاوبة مع حاجات المستخدم، مرنة.",
+  scene:"good", next:()=>"end"},
+
+ end:{type:"end",title:"انتهت الجولة الثانية",
+  text:"الشركات الثلاث فهمت المشجع: ماذا يرى، وكيف يشعر، وكيف يُبنى له التطبيق خطوة بعد خطوة. رسالة جديدة من اللجنة: «في الجولة القادمة نريد أن نعرف: بماذا ستبنون التطبيق؟»",
+  exit:"تذكرة الخروج: اذكروا فرقاً واحداً بين واجهة المستخدم وتجربة المستخدم من تجربتكم مع التطبيقين اليوم.",
+  scene:"home"}
+};
+
+/* ====================================================================
+   الحالة
+   ==================================================================== */
+const KEY="wc34-s2-v1";
+function fresh(){return {node:"intro",hist:[],scores:[0,0,0],dec:{},drag:{},trial:{i:0,res:[{},{},{}]},log:{right:[0,0,0],tries:[0,0,0],drag:[0,0,0]}};}
+let S=null; try{S=JSON.parse(localStorage.getItem(KEY)||"null");}catch(e){}
+if(!S||!NODES[S.node]) S=fresh();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}};
+const decState=id=>S.dec[id]||(S.dec[id]={c:[null,null,null],rev:false});
+const dragState=id=>S.drag[id]||(S.drag[id]={placed:{},turn:0});
+
+/* تمدد المسرح */
+const stage=document.getElementById("stage"); let SCALE=1;
+function fit(){ const w=innerWidth,h=innerHeight; SCALE=Math.min(w/1920,h/1080);
+ stage.style.transform=`scale(${SCALE})`; stage.style.left=((w-1920*SCALE)/2)+"px"; stage.style.top=((h-1080*SCALE)/2)+"px";
+ if(R.renderer) R.renderer.setPixelRatio(Math.min(2,(devicePixelRatio||1)*SCALE*1.2)); }
+addEventListener("resize",fit);
+
+/* ====================================================================
+   المشهد ثلاثي الأبعاد: جوال قائم فوق أرض الملعب، وخط إنتاج، وجمهور
+   ==================================================================== */
+const R={}; const VIEW_W=1084, VIEW_H=640; const view=document.getElementById("view");
+let spin=false, screenMode="", dlCount=0, dlTarget=0, crowdT=0, crowdGoal=0, shake=0;
+const stageLit=[false,false,false,false];
+function canvasTex(w,h,draw){const c=document.createElement("canvas");c.width=w;c.height=h;const g=c.getContext("2d");draw(g,w,h);const t=new THREE.CanvasTexture(c);t.anisotropy=4;return {tex:t,ctx:g};}
+
+function init3D(){
+ if(!window.THREE){ view.insertAdjacentHTML("afterbegin",'<div class="fallback">تعذّر تحميل المشهد ثلاثي الأبعاد. تأكد من الاتصال بالإنترنت ثم أعد تحميل الصفحة. القصة والقرارات والأنشطة تعمل بدونه.</div>'); return; }
+ const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+ renderer.setSize(VIEW_W,VIEW_H,false); renderer.domElement.style.width=VIEW_W+"px"; renderer.domElement.style.height=VIEW_H+"px";
+ renderer.outputEncoding=THREE.sRGBEncoding; view.insertBefore(renderer.domElement,view.firstChild);
+ const scene=new THREE.Scene(); scene.fog=new THREE.Fog(0x09172a,16,34);
+ const cam=new THREE.PerspectiveCamera(36,VIEW_W/VIEW_H,0.1,100); cam.position.set(0,6.2,16.5);
+ const ctl=new THREE.OrbitControls(cam,renderer.domElement); ctl.target.set(0,2.6,0.8); ctl.enableDamping=true; ctl.enablePan=false; ctl.minDistance=8; ctl.maxDistance=20; ctl.maxPolarAngle=Math.PI*0.49;
+ scene.add(new THREE.HemisphereLight(0xbcd8ff,0x0b1a10,0.8));
+ const key=new THREE.DirectionalLight(0xffffff,0.9); key.position.set(5,10,8); scene.add(key);
+ const rim=new THREE.DirectionalLight(0xf0b84a,0.6); rim.position.set(-6,5,-6); scene.add(rim);
+
+ const pitch=canvasTex(1024,1024,(g,w,h)=>{const grd=g.createRadialGradient(w/2,h/2,50,w/2,h/2,w/2);grd.addColorStop(0,"#1b6a43");grd.addColorStop(1,"#0b2a1c");g.fillStyle=grd;g.fillRect(0,0,w,h);
+  for(let i=0;i<10;i++){g.fillStyle=i%2?"rgba(255,255,255,.03)":"rgba(0,0,0,.05)";g.fillRect(i*w/10,0,w/10,h);}
+  g.strokeStyle="rgba(255,255,255,.55)";g.lineWidth=6;g.strokeRect(120,220,w-240,h-440);g.beginPath();g.moveTo(w/2,220);g.lineTo(w/2,h-220);g.stroke();g.beginPath();g.arc(w/2,h/2,110,0,7);g.stroke();});
+ const disc=new THREE.Mesh(new THREE.CircleGeometry(10,64),new THREE.MeshStandardMaterial({map:pitch.tex,roughness:.95})); disc.rotation.x=-Math.PI/2; scene.add(disc);
+ const ring=new THREE.Mesh(new THREE.TorusGeometry(10,0.06,8,96),new THREE.MeshBasicMaterial({color:0xf0b84a})); ring.rotation.x=Math.PI/2; ring.position.y=0.02; scene.add(ring);
+
+ /* الجوال القائم */
+ const phone=new THREE.Group(); phone.position.set(0,3.25,0); scene.add(phone);
+ const body=new THREE.Mesh(new THREE.BoxGeometry(3.1,6.2,0.34),new THREE.MeshStandardMaterial({color:0x0b1520,metalness:.5,roughness:.35}));
+ const edge=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(3.12,6.22,0.36)),new THREE.LineBasicMaterial({color:0x6f8aa6}));
+ const scr=canvasTex(512,1024,()=>{});
+ const screen=new THREE.Mesh(new THREE.PlaneGeometry(2.8,5.6),new THREE.MeshBasicMaterial({map:scr.tex})); screen.position.z=0.18;
+ const stand=new THREE.Mesh(new THREE.CylinderGeometry(1.1,1.3,0.12,48),new THREE.MeshStandardMaterial({color:0x1d2b3d,metalness:.6,roughness:.4})); stand.position.y=-3.2;
+ phone.add(body,edge,screen,stand);
+
+ /* خط الإنتاج: أربع منصات مرقّمة */
+ const plats=[];
+ for(let i=0;i<4;i++){
+  const t=canvasTex(256,256,(g)=>{g.fillStyle="#132a3e";g.fillRect(0,0,256,256);g.strokeStyle="#f0b84a";g.lineWidth=10;g.beginPath();g.arc(128,128,100,0,7);g.stroke();g.fillStyle="#f0b84a";g.font="bold 130px Tahoma";g.textAlign="center";g.textBaseline="middle";g.fillText(String(i+1),128,138);});
+  const top=new THREE.MeshStandardMaterial({map:t.tex,emissive:0x3ccf86,emissiveIntensity:0,roughness:.5});
+  const side=new THREE.MeshStandardMaterial({color:0x1d3550,emissive:0x3ccf86,emissiveIntensity:0});
+  const m=new THREE.Mesh(new THREE.CylinderGeometry(0.85,0.95,0.3,40),side);
+  const cap=new THREE.Mesh(new THREE.CircleGeometry(0.85,40),top); cap.rotation.x=-Math.PI/2; cap.position.y=0.16; m.add(cap);
+  const x=[4.6,2.2,-2.2,-4.6][i]; m.position.set(x,0.15,3.6); scene.add(m); plats.push({m,top,side});
+ }
+
+ /* الجمهور */
+ const N=170; const bodyG=new THREE.CylinderGeometry(0.11,0.15,0.48,8); const headG=new THREE.SphereGeometry(0.12,10,8);
+ const bodies=new THREE.InstancedMesh(bodyG,new THREE.MeshStandardMaterial({color:0xffffff}),N);
+ const heads=new THREE.InstancedMesh(headG,new THREE.MeshStandardMaterial({color:0xf2d0a4}),N);
+ const fans=[]; const cols=[0x1b8a4a,0xffffff,0x4aa8ff,0xef6450,0xf0b84a,0x8f7cff];
+ for(let i=0;i<N;i++){ const a=Math.random()*Math.PI*2; const r=7.2+Math.random()*2.3; fans.push({a,r,ph:Math.random()*6}); bodies.setColorAt(i,new THREE.Color(cols[i%cols.length])); }
+ scene.add(bodies,heads);
+ Object.assign(R,{renderer,scene,cam,ctl,phone,screen,scr,plats,bodies,heads,fans});
+ fit();
+ const dummy=new THREE.Object3D(); let last=performance.now();
+ (function loop(now){
+  const dt=Math.min(.05,(now-last)/1000); last=now;
+  if(spin) phone.rotation.y+=dt*0.5; else phone.rotation.y+=(Math.sin(now/2600)*0.18-phone.rotation.y)*Math.min(1,dt*2);
+  shake*=0.94; phone.position.x=(Math.random()-.5)*shake; phone.rotation.z=(Math.random()-.5)*shake*0.08;
+  crowdT+=(crowdGoal-crowdT)*Math.min(1,dt*1.6);
+  fans.forEach((f,i)=>{ const r=f.r-(f.r-2.6-((i%7)*0.35))*crowdT; const y=0.24+Math.abs(Math.sin(now/260+f.ph))*0.12*(0.3+crowdT);
+   dummy.position.set(Math.cos(f.a)*r,y,Math.sin(f.a)*r); dummy.updateMatrix(); bodies.setMatrixAt(i,dummy.matrix);
+   dummy.position.y=y+0.36; dummy.updateMatrix(); heads.setMatrixAt(i,dummy.matrix); });
+  bodies.instanceMatrix.needsUpdate=true; heads.instanceMatrix.needsUpdate=true;
+  plats.forEach((p,i)=>{ const goal=stageLit[i]?0.9:0; p.top.emissiveIntensity+=(goal-p.top.emissiveIntensity)*Math.min(1,dt*4); p.side.emissiveIntensity=p.top.emissiveIntensity*0.6; });
+  if(screenMode==="store"||screenMode==="zero"){ if(dlCount<dlTarget){ dlCount=Math.min(dlTarget,dlCount+Math.ceil((dlTarget-dlCount)*dt*2.5)+7); paintScreen(screenMode,true);} }
+  ctl.update(); renderer.render(scene,cam);
+  requestAnimationFrame(loop);
+ })(last);
+}
+
+/* رسم شاشة الجوال */
+function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath();}
+function txt(g,s,x,y,size,color,weight){g.fillStyle=color;g.font=`${weight||"bold"} ${size}px Tahoma`;g.textAlign="center";g.direction="rtl";g.fillText(s,x,y);}
+function paintScreen(mode,force){
+ if(!R.scr) return; if(!force&&mode===screenMode) return; screenMode=mode;
+ const g=R.scr.ctx,w=512,h=1024; g.clearRect(0,0,w,h);
+ const bg=(a,b)=>{const grd=g.createLinearGradient(0,0,0,h);grd.addColorStop(0,a);grd.addColorStop(1,b);g.fillStyle=grd;g.fillRect(0,0,w,h);};
+ if(mode==="black"){ g.fillStyle="#020509"; g.fillRect(0,0,w,h); return R.scr.tex.needsUpdate=true; }
+ if(mode==="home"){ bg("#13324f","#0a1a2c"); txt(g,"9:41",w/2,70,34,"#fff","normal");
+  const apps=[["بريد","#4aa8ff"],["تواصل","#e15b8a"],["رسائل","#3fd08a"],["خرائط","#39c6d6"],["توكلنا","#1b8a4a"],["كاميرا","#6c7a91"],["الطقس","#8f7cff"],["متجر","#ff9a3c"]];
+  apps.forEach(([n,c],i)=>{const x=50+(i%4)*110,y=150+Math.floor(i/4)*170; g.fillStyle=c; rr(g,x,y,84,84,22); g.fill(); txt(g,n,x+42,y+120,24,"#dfe8f1","normal");});
+  g.fillStyle="#f0b84a"; rr(g,156,520,200,200,48); g.fill(); txt(g,"2034",256,640,64,"#1a1405"); txt(g,"تطبيق المشجعين",256,770,32,"#f0b84a");
+  return R.scr.tex.needsUpdate=true; }
+ if(mode==="wire"){ g.fillStyle="#f6f1e4"; g.fillRect(0,0,w,h); g.strokeStyle="#2b2b2b"; g.lineWidth=5; g.setLineDash([14,10]);
+  [[60,90,392,110],[60,240,392,260],[60,540,392,70],[60,640,180,70],[272,640,180,70],[60,760,392,170]].forEach(([x,y,a,b])=>{g.strokeRect(x,y,a,b);});
+  g.setLineDash([]); txt(g,"مخطط يدوي",w/2,160,40,"#2b2b2b"); txt(g,"صورة الملعب",w/2,380,32,"#555","normal"); txt(g,"زر",w/2,585,30,"#555","normal");
+  return R.scr.tex.needsUpdate=true; }
+ if(mode==="good"||mode==="dev"||mode==="test"){ bg("#f4f7fb","#e8eef5");
+  txt(g,"تذكرتي",w/2,110,52,"#0d1b2a"); g.fillStyle="#0f3a5c"; rr(g,40,150,432,170,30); g.fill();
+  txt(g,"مباراة الافتتاح",w/2,220,36,"#fff"); txt(g,"البوابة 7 · المقعد C-14",w/2,280,30,"#bcd3e8","normal");
+  const grd=g.createLinearGradient(0,350,0,520); grd.addColorStop(0,"#2a8a55"); grd.addColorStop(1,"#14552f"); g.fillStyle=grd; rr(g,40,350,432,170,26); g.fill(); g.strokeStyle="rgba(255,255,255,.7)"; g.lineWidth=5; g.strokeRect(100,385,312,100);
+  g.fillStyle="#fff"; g.strokeStyle="#cfd8e3"; g.lineWidth=4; rr(g,40,550,432,80,20); g.fill(); g.stroke(); txt(g,"ابحث عن مقعدك…",w/2,600,28,"#8a97a6","normal");
+  g.fillStyle="#f0b84a"; rr(g,40,660,432,110,26); g.fill(); txt(g,"بوابتي",w/2,730,44,"#1a1405");
+  g.fillStyle="#dfe7f0"; rr(g,40,800,206,90,22); g.fill(); rr(g,266,800,206,90,22); g.fill(); txt(g,"مقعدي",143,856,30,"#0d1b2a"); txt(g,"الطريق",369,856,30,"#0d1b2a");
+  if(mode==="test"){ g.fillStyle="rgba(10,40,24,.85)"; rr(g,90,380,332,260,40); g.fill(); g.strokeStyle="#3ccf86"; g.lineWidth=14; g.beginPath(); g.moveTo(190,510); g.lineTo(240,560); g.lineTo(330,450); g.stroke(); txt(g,"اجتاز الاختبار",w/2,620,34,"#3ccf86"); }
+  return R.scr.tex.needsUpdate=true; }
+ if(mode==="bad"){ const grd=g.createLinearGradient(0,0,w,h); grd.addColorStop(0,"#ff3cac"); grd.addColorStop(.45,"#784ba0"); grd.addColorStop(1,"#2b86c5"); g.fillStyle=grd; g.fillRect(0,0,w,h);
+  g.fillStyle="#ffeb3b"; rr(g,30,70,452,70,12); g.fill(); txt(g,"عرض خاص! اضغط هنا!!",w/2,118,32,"#d50000");
+  const c=["#ff5252","#ffab40","#69f0ae","#40c4ff","#e040fb","#ffd740","#64ffda","#ff6e40","#b2ff59","#18ffff","#ff4081","#7c4dff"];
+  for(let i=0;i<12;i++){ g.fillStyle=c[i]; rr(g,30+(i%3)*152,170+Math.floor(i/3)*150,140,136,16); g.fill(); }
+  txt(g,"؟ أين البوابة",w/2,880,40,"#fff"); return R.scr.tex.needsUpdate=true; }
+ if(mode==="crash"){ g.fillStyle="#1a0507"; g.fillRect(0,0,w,h); for(let i=0;i<26;i++){ g.fillStyle=`rgba(239,100,80,${Math.random()*.5})`; g.fillRect(0,Math.random()*h,w,6+Math.random()*30); }
+  txt(g,"⚠",w/2,420,160,"#ef6450","normal"); txt(g,"توقف التطبيق",w/2,560,48,"#fff"); txt(g,"50,000 مستخدم في اللحظة نفسها",w/2,630,28,"#ffb3a6","normal"); return R.scr.tex.needsUpdate=true; }
+ if(mode==="store"||mode==="zero"){ bg("#ffffff","#eef2f6"); txt(g,"متجر التطبيقات",w/2,100,36,"#0d1b2a");
+  g.fillStyle="#f0b84a"; rr(g,166,150,180,180,44); g.fill(); txt(g,"2034",w/2,262,52,"#1a1405"); txt(g,"تطبيق المشجعين",w/2,390,40,"#0d1b2a"); txt(g,"من الفندق إلى المقعد",w/2,440,28,"#5b6b7c","normal");
+  txt(g,"عدد التحميلات",w/2,560,32,"#5b6b7c","normal"); txt(g,dlCount.toLocaleString("en-US"),w/2,680,110,dlCount?"#1b8a4a":"#ef6450");
+  g.fillStyle=dlCount?"#1b8a4a":"#9aa7b4"; rr(g,120,760,272,90,45); g.fill(); txt(g,dlCount?"مُتاح للتحميل":"غير منشور",w/2,818,32,"#fff"); return R.scr.tex.needsUpdate=true; }
+}
+
+function setScene(kind){
+ if(!R.scene) return;
+ crowdGoal=0; shake=0;
+ if(kind==="home"){ paintScreen("home"); }
+ if(kind==="black"){ paintScreen("black"); }
+ if(kind==="good"){ paintScreen("good"); }
+ if(kind==="bad"){ paintScreen("bad"); }
+ if(kind==="crash"){ paintScreen("crash"); crowdGoal=1; shake=0.35; }
+ if(kind==="zero"){ dlCount=0; dlTarget=0; paintScreen("zero",true); }
+ if(kind==="pipeline"){ pipelineScreen(); }
+ if(kind==="mocks"){ paintScreen("good"); }
+ for(let i=0;i<4;i++) stageLit[i]= kind==="pipeline" ? stageLit[i] : false;
+}
+function reaction(kind){
+ if(!R.scene) return;
+ if(kind==="home") paintScreen("home");
+ if(kind==="calm"){ crowdGoal=0.25; shake=0; paintScreen("test"); }
+ if(kind==="downloads"){ screenMode="store"; dlTarget=2400000; paintScreen("store",true); }
+}
+function pipelineScreen(){
+ const d=dragState("pipeline"); const placed=new Set(Object.keys(d.placed).map(i=>NODES.pipeline.items[i].k));
+ for(let i=0;i<4;i++) stageLit[i]=placed.has(i);
+ let n=0; while(placed.has(n)) n++;
+ const mode=["black","wire","good","test","store"][n];
+ if(mode==="store"){ screenMode=""; dlCount=0; dlTarget=850000; paintScreen("store",true); } else paintScreen(mode);
+}
+
+/* ====================================================================
+   الواجهة والمحرك
+   ==================================================================== */
+const $=id=>document.getElementById(id);
+const storyEl=$("story"), bottomEl=$("bottom"), overlay=$("overlay");
+let toastT=0; function toast(m){const t=$("toast");t.textContent=m;t.style.opacity=1;clearTimeout(toastT);toastT=setTimeout(()=>t.style.opacity=0,2800);}
+function renderScores(bump){ $("scores").innerHTML=TEAMS.map((t,k)=>`<span class="chip ${bump&&bump.includes(k)?"bump":""}" style="--c:${t.c}"><i></i>${t.name}<span class="pts">${S.scores[k]}</span></span>`).join(""); if(bump) setTimeout(()=>document.querySelectorAll(".chip.bump").forEach(c=>c.classList.remove("bump")),350); }
+function renderSteps(){ const ch=CHAPTERS.indexOf(PARENT[S.node]||S.node); $("steps").innerHTML=CHAPTERS.map((_,i)=>`<span class="${i<ch?"done":i===ch?"on":""}"></span>`).join(""); }
+function kickHTML(n){ return `<div class="kick">${n.obj!==undefined?`<span class="tag obj">الهدف ${n.obj}</span>`:""}${n.page?`<span class="tag">الكتاب ص ${n.page}</span>`:""}${n.branch?`<span class="tag branch">مسار الإنقاذ</span>`:""}</div>`; }
+const whyHTML=(n,label)=>`<div class="why"><b>${label||"من الكتاب:"}</b> ${n.why||n.done} <span class="src">(ص ${n.page})</span></div>`;
+
+function render(){
+ stopTimer(); stopTrialClock(); overlay.innerHTML=""; $("viewtools").hidden=false;
+ const n=NODES[S.node]; renderSteps(); renderScores(); setScene(n.scene);
+ $("prevBtn").disabled=S.hist.length===0;
+ $("timerBtn").hidden=n.type!=="dec"; $("timerView").textContent="";
+ $("revealBtn").hidden=n.type!=="dec";
+ $("nextBtn").textContent=n.type==="end"?"بداية جديدة":"التالي ←";
+ ({intro:renderIntro,dec:renderDec,drag:renderDrag,trial:renderTrial,end:renderEnd})[n.type](n);
+ updateNext(); save();
+}
+function updateNext(){ const n=NODES[S.node]; let ok=true;
+ if(n.type==="dec") ok=decState(S.node).rev; if(n.type==="drag") ok=dragDone(n); if(n.type==="trial") ok=S.trial.i>=6;
+ $("nextBtn").disabled=!ok; $("nextBtn").classList.toggle("gold",ok); }
+
+function renderIntro(n){
+ storyEl.innerHTML=`<div class="kick"><span class="tag">الجولة الثانية</span><span class="tag">الوحدة الثالثة · الدرس الأول</span></div>
+  <h2 class="big">${n.title}</h2><p class="narr">${n.text}</p>
+  <p class="narr" style="color:var(--muted)">في هذه الجولة: تعريف التطبيق، ومراحل بنائه، ومختبر تجرّبون فيه تطبيقين بأيديكم، ثم واجهة المستخدم وتجربة المستخدم.</p>`;
+ bottomEl.innerHTML=`<div class="teams">${TEAMS.map((t,k)=>`<div class="team" style="--c:${t.c}"><h4>${t.name}<span class="st">${S.scores[k]} نقطة</span></h4><div class="cons">النقاط تبدأ من جديد في هذه الجولة، وتُجمع مع الجولات الأخرى في النهاية.</div></div>`).join("")}</div>`;
+}
+
+function renderDec(n){
+ const st=decState(S.node);
+ storyEl.innerHTML=`${kickHTML(n)}<h2>${n.title}</h2><div class="scroll">${st.rev?"":`<p class="narr">${n.text}</p>`}<p class="q">${n.q}</p>
+  <ol class="opts">${n.opts.map((o,k)=>`<li class="${st.rev&&k===n.ans?"right":""}"><b>${LET[k]}</b><span>${o}</span></li>`).join("")}</ol></div>${st.rev?whyHTML(n):""}`;
+ bottomEl.innerHTML=`<div class="teams">${TEAMS.map((t,k)=>{ const c=st.c[k];
+  const status=st.rev?(c===null?'<span class="st">لم يقرر</span>':c===n.ans?`<span class="st ok">✓ صحيح +${P_DEC}</span>`:'<span class="st bad">✗ قرار خاطئ</span>'):(c===null?'<span class="st">يتناقش…</span>':'<span class="st ok">🔒 تم القرار</span>');
+  const picks=n.opts.map((_,o)=>`<button data-t="${k}" data-o="${o}" class="${st.rev?((c===o?"sel ":"")+(o===n.ans?"right":"")):""}" aria-label="${t.name} يختار ${LET[o]}">${LET[o]}</button>`).join("");
+  return `<div class="team ${!st.rev&&c!==null?"lockedin":""}" style="--c:${t.c}"><h4>${t.name}${status}</h4><div class="picks ${st.rev?"locked":""}">${picks}</div>${st.rev&&c!==null?`<div class="cons">${n.cons[c]}</div>`:""}</div>`;}).join("")}</div>`;
+ bottomEl.querySelectorAll(".picks button").forEach(b=>b.onclick=()=>{ if(st.rev) return; const k=+b.dataset.t,o=+b.dataset.o; st.c[k]=(st.c[k]===o?null:o); save(); renderDec(n); });
+ $("revealBtn").disabled=st.rev;
+ if(st.rev&&n.onReveal) reaction(n.onReveal);
+}
+function doReveal(){ const n=NODES[S.node]; if(n.type!=="dec") return; const st=decState(S.node); if(st.rev) return;
+ st.rev=true; const bump=[]; st.c.forEach((c,k)=>{ if(c===null) return; S.log.tries[k]++; if(c===n.ans){S.scores[k]+=P_DEC;S.log.right[k]++;bump.push(k);} });
+ save(); renderDec(n); renderScores(bump); updateNext();
+ const nx=n.next({right:st.c.filter(c=>c===n.ans).length}); if(nx==="r1"||nx==="r2") toast("أغلب الشركات لم تصب. اللجنة تفتح مسار الإنقاذ.");
+}
+
+/* ---------- السحب والإفلات ---------- */
+function dragDone(n){ return Object.keys(dragState(S.node).placed).length>=n.items.length; }
+function renderDrag(n){
+ const d=dragState(S.node); const remaining=n.items.map((_,i)=>i).filter(i=>!(i in d.placed)); const team=TEAMS[d.turn%3]; const done=dragDone(n);
+ let board="";
+ if(n.mode==="pipeline"){
+  const byK={}; Object.keys(d.placed).forEach(i=>byK[n.items[i].k]=true);
+  board=`<div class="pipe">${STAGES.map((s,k)=>`<div class="slot ${byK[k]?"ok":""}" data-drop="slot:${k}"><span class="n">${k+1}</span><span class="d">${byK[k]?`<b>${s.t}</b>${s.d}`:"اسحب مرحلة إلى هنا"}</span></div>`).join("")}</div>`;
+  pipelineScreen();
+ }
+ storyEl.innerHTML=`${kickHTML(n)}<h2>${n.title}</h2><div class="scroll"><p class="narr">${n.text}</p>${board}</div>${done?whyHTML(n,"اكتملت المهمة:"):""}`;
+ bottomEl.innerHTML=`<div class="act"><div class="turn" style="--c:${team.c}">${done?`<b style="color:var(--ok)">✓ اكتملت</b><small>اضغط التالي</small>`:`<small>الدور الآن على</small><b>${team.name}</b><small>اسحب بطاقة واحدة إلى مكانها</small>`}</div>
+  <div class="tray" id="tray">${remaining.map(i=>`<div class="card" data-i="${i}">${n.items[i].t}</div>`).join("")||'<span style="color:var(--muted)">لا بطاقات متبقية</span>'}</div></div>`;
+ if(n.mode==="specs"){
+  const g=Object.keys(d.placed).filter(i=>n.items[i].k==="g").map(i=>n.items[i].t), b=Object.keys(d.placed).filter(i=>n.items[i].k==="b").map(i=>n.items[i].t);
+  overlay.innerHTML=`<div class="zone" data-drop="zone:g" style="--c:#3ccf86;top:60px;right:24px;width:340px"><h5>من مواصفات الواجهة الجيدة</h5><div class="got">${g.map(x=>`<span>${x}</span>`).join("")}</div></div>
+   <div class="zone" data-drop="zone:b" style="--c:#ef6450;top:60px;left:24px;width:340px"><h5>ليست من مواصفاتها</h5><div class="got">${b.map(x=>`<span>${x}</span>`).join("")}</div></div>`;
+ }
+ if(n.mode==="anatomy"){ $("viewtools").hidden=true; overlay.innerHTML=`<div class="dim"></div><div class="anat"><div class="mock ${done?"":"armed"}" id="anatMock">${appBHTML(true)}</div></div>`; drawAnatTags(n,d); }
+ bottomEl.querySelectorAll(".card").forEach(el=>startDraggable(el,n));
+}
+function drawAnatTags(n,d){
+ const mock=$("anatMock"); if(!mock) return; const vr=view.getBoundingClientRect();
+ Object.keys(d.placed).forEach(i=>{ const k=n.items[i].k; const el=mock.querySelector(`[data-drop="anat:${k}"]`); if(!el) return; const r=el.getBoundingClientRect();
+  const tag=document.createElement("div"); tag.className="tagon"; tag.textContent=n.items[i].t;
+  tag.style.left=((r.left-vr.left)/SCALE-14)+"px"; tag.style.top=((r.top-vr.top+r.height/2)/SCALE)+"px"; overlay.appendChild(tag); });
+}
+function startDraggable(el,n){
+ el.onpointerdown=e=>{ e.preventDefault(); const i=+el.dataset.i; el.classList.add("dragging");
+  const g=document.createElement("div"); g.className="ghost"; g.textContent=n.items[i].t; g.style.fontSize=(22*SCALE)+"px"; g.style.padding=`${10*SCALE}px ${18*SCALE}px`; document.body.appendChild(g);
+  let hot=null;
+  const move=ev=>{ g.style.left=ev.clientX+"px"; g.style.top=ev.clientY+"px"; const t=dropAt(ev.clientX,ev.clientY); if(hot&&hot!==t) hot.classList.remove("hot"); if(t) t.classList.add("hot"); hot=t; };
+  move(e);
+  const up=ev=>{ removeEventListener("pointermove",move); removeEventListener("pointerup",up); removeEventListener("pointercancel",up); g.remove(); el.classList.remove("dragging"); if(hot) hot.classList.remove("hot"); const t=dropAt(ev.clientX,ev.clientY); if(t) tryDrop(n,i,t.dataset.drop); };
+  addEventListener("pointermove",move); addEventListener("pointerup",up); addEventListener("pointercancel",up); };
+}
+function dropAt(x,y){ return [...document.querySelectorAll("[data-drop]")].find(el=>{const r=el.getBoundingClientRect(); return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom;})||null; }
+function tryDrop(n,i,target){
+ const d=dragState(S.node); const k=d.turn%3; const it=n.items[i];
+ const ok={pipeline:target==="slot:"+it.k, specs:target==="zone:"+it.k, anatomy:target==="anat:"+it.k}[n.mode];
+ if(ok){ d.placed[i]=k; S.scores[k]+=P_DRAG; S.log.drag[k]++; toast(`✓ ${TEAMS[k].name}: إجابة صحيحة +${P_DRAG}`); renderScores([k]); }
+ else toast(`✗ ${TEAMS[k].name}: ${({pipeline:"ليست هذه مرحلتها. ماذا يجب أن يحدث قبلها؟",specs:"فكّروا: هل يساعد هذا المشجع على الوصول إلى حاجته بسهولة؟",anatomy:"ليس هذا العنصر. انظروا إلى شكله على الشاشة."})[n.mode]} الدور ينتقل.`);
+ d.turn++; save(); renderDrag(n); updateNext();
+}
+
+/* ---------- نماذج التطبيقين ---------- */
+function appAHTML(){
+ const tiles=[["أخبار","#ff5252"],["عروض","#ffab40"],["ألعاب","#00c853"],["فيديو","#2979ff"],["صور","#d500f9"],["مسابقات","#ff6d00"],["الرعاة","#00b8d4"],["بث مباشر","#c51162"],["تحديات","#6200ea"],["الطقس","#2e7d32"],["متجر","#ff1744"],["المزيد ⋯","#37474f"]];
+ return `<div class="notch"></div><div class="appA"><div class="bar"><span>☰</span><span>FAN ZONE 2034 ⚡</span><span>🔔3</span></div>
+  <div class="ad" data-a="ad">🔥 خصم 70% على القمصان! اضغط الآن 🔥</div>
+  <div class="tiles">${tiles.map(([t,c])=>`<button style="background:${c}" data-a="${t==="المزيد ⋯"?"more":"tile"}">${t}</button>`).join("")}</div>
+  <div class="ad" data-a="ad">📺 شاهد الإعلان واربح نقاطاً</div></div>`;
+}
+function appBHTML(anat){
+ const D=k=>anat?`data-drop="anat:${k}"`:"";
+ return `<div class="notch"></div><div class="appB"><div class="t">تذكرتي</div>
+  <div class="tk"><b ${D("label")} style="font-size:20px">مباراة الافتتاح</b><small>البوابة ؟ · المقعد C-14</small></div>
+  <div class="img" ${D("image")}></div>
+  <div class="search" ${D("text")}>ابحث عن مقعدك…</div>
+  <button class="big" ${D("button")} data-a="gate">بوابتي</button>
+  <div style="display:flex;gap:8px"><button class="sm" style="flex:1" data-a="x">مقعدي</button><button class="sm" style="flex:1" data-a="x">الطريق</button></div></div>`;
+}
+
+/* ---------- المختبر: تجربة التطبيقين بالمؤقت ---------- */
+const ORDER=[[0,"A"],[1,"A"],[2,"A"],[0,"B"],[1,"B"],[2,"B"]];
+let tClock=null,tStart=0,running=false;
+function stopTrialClock(){ if(tClock){clearInterval(tClock);tClock=null;} running=false; }
+function renderTrial(n){
+ const T=S.trial; const done=T.i>=6;
+ const rows=TEAMS.map((t,k)=>{ const r=T.res[k]; const cur=!done&&ORDER[T.i][0]===k; const f=v=>v===undefined?"—":v>=60?"60+ ث":v.toFixed(1)+" ث";
+  return `<tr class="${cur?"cur":""}"><td style="color:${t.c};font-weight:700">${t.name}</td><td>${f(r.A)}</td><td>${f(r.B)}</td></tr>`; }).join("");
+ const avg=a=>{const v=T.res.map(r=>r[a]).filter(x=>x!==undefined); return v.length?(v.reduce((s,x)=>s+x,0)/v.length).toFixed(1):"—";};
+ storyEl.innerHTML=`${kickHTML(n)}<h2>${n.title}</h2><div class="scroll">${done?"":`<p class="narr">${n.text}</p>`}
+  <table class="rtable"><thead><tr><th>الفريق</th><th>التطبيق (أ)</th><th>التطبيق (ب)</th></tr></thead><tbody>${rows}
+  <tr><td style="font-weight:700">المتوسط</td><td>${avg("A")} ث</td><td>${avg("B")} ث</td></tr></tbody></table></div>${done?whyHTML(n,"ماذا اكتشفنا؟"):""}`;
+ $("viewtools").hidden=true;
+ if(done){ overlay.innerHTML=`<div class="dim"></div><div class="mocks"><div class="mockwrap"><h6>التطبيق (أ)</h6><div class="mock off">${appAHTML()}</div></div><div class="mockwrap"><h6>التطبيق (ب)</h6><div class="mock off">${appBHTML()}</div></div></div>`;
+  bottomEl.innerHTML=`<div class="act"><div class="turn" style="--c:var(--ok)"><b style="color:var(--ok)">✓ انتهت التجربة</b><small>ناقشوا النتائج ثم اضغطوا التالي</small></div><div class="tray"><span class="narr">متوسط التطبيق (أ): <b style="color:var(--bad)">${avg("A")} ث</b> · متوسط التطبيق (ب): <b style="color:var(--ok)">${avg("B")} ث</b></span></div></div>`; return; }
+ const [k,app]=ORDER[T.i]; const team=TEAMS[k];
+ overlay.innerHTML=`<div class="dim"></div><div class="mocks">
+   <div class="mockwrap"><h6>التطبيق (أ)</h6><div class="mock ${app==="A"?"":"off"}" id="mockA">${appAHTML()}</div></div>
+   <div class="mockwrap"><h6>التطبيق (ب)</h6><div class="mock ${app==="B"?"":"off"}" id="mockB">${appBHTML()}</div></div></div>
+  <div class="trialbar"><span class="who" style="color:${team.c}">${team.name} · التطبيق (${app==="A"?"أ":"ب"})</span><span class="clock" id="clock">0.0</span></div>`;
+ bottomEl.innerHTML=`<div class="act"><div class="turn" style="--c:${team.c}"><small>المحاولة ${T.i+1} من 6</small><b>${team.name}</b><small>المهمة: اعرض رقم بوابتي</small></div>
+  <div class="tray"><button class="btn gold" id="goTrial" style="font-size:28px;padding:14px 34px">ابدأ المحاولة</button><button class="btn" id="giveUp" style="font-size:22px">استسلم (60 ث)</button></div></div>`;
+ const mock=$(app==="A"?"mockA":"mockB"); mock.style.pointerEvents="none";
+ $("goTrial").onclick=()=>{ if(running) return; running=true; tStart=performance.now(); mock.style.pointerEvents="auto"; $("goTrial").disabled=true;
+  tClock=setInterval(()=>{ const s=(performance.now()-tStart)/1000; const c=$("clock"); if(c) c.textContent=s.toFixed(1); if(s>=60) finishTrial(60); },100); };
+ $("giveUp").onclick=()=>{ if(running) finishTrial(60); else { running=true; finishTrial(60); } };
+ wireApp(mock,app);
+}
+function finishTrial(sec){
+ if(!running) return; stopTrialClock(); const [k,app]=ORDER[S.trial.i]; S.trial.res[k][app]=sec; S.trial.i++; save();
+ const ov=document.querySelector("#mock"+app); if(ov&&sec<60) ov.insertAdjacentHTML("beforeend",`<div class="win"><span>بوابتك</span><b>7</b><span>${sec.toFixed(1)} ثانية</span></div>`);
+ setTimeout(()=>{ renderTrial(NODES.trial); updateNext(); }, sec<60?1600:300);
+}
+function wireApp(mock,app){
+ if(app==="B"){ mock.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{ if(!running) return; if(b.dataset.a==="gate") finishTrial((performance.now()-tStart)/1000); else toast("ليست هذه البوابة."); }); return; }
+ const root=mock.querySelector(".appA");
+ const popAd=()=>{ if(root.querySelector(".pop")) return; root.insertAdjacentHTML("beforeend",`<div class="pop">📢 إعلان من الراعي!<br>يمكنك الإغلاق بعد ثانيتين<br><button disabled>إغلاق (2)</button></div>`);
+  const b=root.querySelector(".pop button"); let n=2; const t=setInterval(()=>{ n--; if(n<=0){clearInterval(t); b.disabled=false; b.textContent="إغلاق"; b.onclick=()=>root.querySelector(".pop").remove();} else b.textContent=`إغلاق (${n})`; },1000); };
+ root.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{ if(!running) return; const a=b.dataset.a;
+  if(a==="ad"||a==="tile"){ popAd(); return; }
+  if(a==="more"){ openSheet([["الإعدادات","x"],["حسابي","x"],["معلومات الملعب","stadium"],["الدعم الفني","x"]]); } });
+ function openSheet(items){ root.querySelector(".sheet")?.remove(); root.insertAdjacentHTML("beforeend",`<div class="sheet">${items.map(([t,a])=>`<button data-s="${a}">${t}</button>`).join("")}</div>`);
+  root.querySelectorAll(".sheet button").forEach(b=>b.onclick=()=>{ if(!running) return; const a=b.dataset.s;
+   if(a==="stadium") openSheet([["خريطة الملعب","x"],["المواقف","x"],["البوابات والمداخل","gates"],["رجوع","back"]]);
+   else if(a==="gates") openSheet([["البوابات الشمالية","x"],["بوابتي","gate"],["رجوع","back"]]);
+   else if(a==="gate") finishTrial((performance.now()-tStart)/1000);
+   else if(a==="back") root.querySelector(".sheet").remove();
+   else popAd(); }); }
+}
+
+/* ---------- الختام ---------- */
+function renderEnd(n){
+ const rows=TEAMS.map((t,k)=>`<tr><td style="color:${t.c};font-weight:700;white-space:nowrap">${t.name}</td><td>${S.log.right[k]} / ${S.log.tries[k]}</td><td>${S.log.drag[k]}</td><td style="font-family:var(--display);font-size:30px;color:${t.c}">${S.scores[k]}</td></tr>`).join("");
+ const top=Math.max(...S.scores);
+ storyEl.innerHTML=`<div class="kick"><span class="tag">نهاية الجولة الثانية</span></div><h2>${n.title}</h2><div class="scroll"><p class="narr">${n.text}</p>
+  <table class="sum"><thead><tr><th>الشركة</th><th>قرارات صحيحة</th><th>بطاقات</th><th>النقاط</th></tr></thead><tbody>${rows}</tbody></table>
+  </div>`;
+ bottomEl.innerHTML=`<div class="teams">${TEAMS.map((t,k)=>`<div class="team" style="--c:${t.c}"><h4>${t.name}<span class="st ${S.scores[k]===top&&top>0?"ok":""}">${S.scores[k]===top&&top>0?"🏆 متصدر الجولة":""}</span></h4><div class="cons">${S.scores[k]} نقطة · ${S.log.right[k]} قرارات صحيحة · ${S.log.drag[k]} بطاقات صحيحة</div><div class="cons" style="color:var(--gold)">${n.exit}</div></div>`).join("")}</div>`;
+}
+
+/* ---------- التنقل ---------- */
+function go(id){ S.hist.push(S.node); S.node=id; render(); }
+$("nextBtn").onclick=()=>{ const n=NODES[S.node]; if(n.type==="end"){askReset();return;} if($("nextBtn").disabled) return;
+ let right=0; if(n.type==="dec") right=decState(S.node).c.filter(c=>c===n.ans).length; go(n.next({right})); };
+$("prevBtn").onclick=()=>{ if(!S.hist.length) return; S.node=S.hist.pop(); render(); };
+$("revealBtn").onclick=doReveal;
+let resetArmed=false;
+function askReset(){ const b=$("resetBtn"); if(!resetArmed){ resetArmed=true; b.textContent="اضغط للتأكيد"; b.classList.add("gold"); setTimeout(()=>{resetArmed=false;b.textContent="بداية جديدة";b.classList.remove("gold");},3500); return; }
+ resetArmed=false; S=fresh(); b.textContent="بداية جديدة"; b.classList.remove("gold"); render(); }
+$("resetBtn").onclick=askReset;
+let tId=null,tLeft=0; function stopTimer(){ if(tId){clearInterval(tId);tId=null;} }
+$("timerBtn").onclick=()=>{ stopTimer(); tLeft=60; tickT(); tId=setInterval(()=>{tLeft--;tickT();if(tLeft<=0)stopTimer();},1000); };
+function tickT(){ const v=$("timerView"); v.textContent=tLeft>0?`0:${String(tLeft).padStart(2,"0")}`:"انتهى"; v.classList.toggle("low",tLeft<=10); }
+$("spinBtn").onclick=()=>{ spin=!spin; $("spinBtn").textContent=spin?"إيقاف التدوير":"تدوير الجوال"; };
+document.addEventListener("keydown",e=>{ if(e.target.closest&&e.target.closest(".mock")) return;
+ if(e.key==="ArrowLeft") $("nextBtn").click(); else if(e.key==="ArrowRight") $("prevBtn").click(); else if(e.key===" "){ e.preventDefault(); doReveal(); } });
+
+fit(); init3D(); render();
+</script>
+</body>
+</html>

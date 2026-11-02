@@ -1,0 +1,720 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>مناقصة كأس العالم 2034 · الجولة الأولى</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@500;700&family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap">
+<style>
+/* مسرح ثابت 1920×1080 يتمدد ليملأ أي شاشة. ملعب ليلي، وذهب الكأس للتمييز، ولكل فريق لونه */
+:root{
+  --bg:#08131f; --panel:#0f2133; --panel2:#152d45; --line:#24486a;
+  --fg:#eef3f8; --muted:#93abc2; --gold:#f0b84a; --ok:#3ccf86; --bad:#ef6450;
+  --t1:#4aa8ff; --t2:#3fd08a; --t3:#ff9a3c;
+  --display:"Reem Kufi","Tahoma",sans-serif;
+  --body:"IBM Plex Sans Arabic","Tahoma","Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--bg)}
+body{color:var(--fg);font-family:var(--body);-webkit-user-select:none;user-select:none}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+[hidden]{display:none!important}
+
+#stage{position:absolute;width:1920px;height:1080px;transform-origin:0 0;
+  background:radial-gradient(1200px 600px at 30% 0%,#173756 0,transparent 70%),radial-gradient(900px 500px at 100% 100%,#122a1f 0,transparent 70%),var(--bg);
+  font-size:26px;line-height:1.55;overflow:hidden}
+
+/* الرأس */
+.head{position:absolute;inset:0 0 auto 0;height:96px;display:flex;align-items:center;gap:28px;padding:0 36px;border-bottom:1px solid var(--line)}
+.brand{font-family:var(--display);font-size:38px;line-height:1.1;white-space:nowrap}
+.brand small{display:block;font-family:var(--body);font-size:18px;color:var(--muted)}
+.brand b{color:var(--gold)}
+.steps{flex:1;display:flex;gap:6px;align-items:center;justify-content:center;min-width:0}
+.steps span{height:8px;flex:1;max-width:90px;border-radius:4px;background:var(--line)}
+.steps span.done{background:var(--muted)}
+.steps span.on{background:var(--gold)}
+.scores{display:flex;gap:12px}
+.chip{display:flex;align-items:center;gap:10px;background:var(--panel);border:2px solid var(--c);border-radius:999px;padding:6px 18px;font-weight:700;font-size:22px;transition:transform .25s}
+.chip i{width:14px;height:14px;border-radius:50%;background:var(--c)}
+.chip .pts{font-family:var(--display);font-size:28px;color:var(--c);min-width:2.4ch;text-align:center;font-variant-numeric:tabular-nums}
+.chip.bump{transform:scale(1.12)}
+
+/* لوحة القصة */
+.story{position:absolute;top:116px;right:36px;width:740px;height:640px;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:30px 34px;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+.kick{display:flex;gap:10px;flex-wrap:wrap;font-size:18px;color:var(--muted)}
+.tag{border:1px solid var(--line);border-radius:999px;padding:2px 14px}
+.tag.obj{border-color:var(--gold);color:var(--gold)}
+.tag.branch{border-color:var(--bad);color:var(--bad)}
+.story h2{margin:0;font-family:var(--display);font-size:48px;line-height:1.2;text-wrap:balance}
+.story p{margin:0}
+.narr{font-size:25px}
+.q{font-weight:700;color:var(--gold);font-size:27px}
+.opts{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+.opts li{display:flex;gap:14px;align-items:flex-start;background:var(--panel2);border:2px solid transparent;border-radius:12px;padding:8px 14px;font-size:23px;line-height:1.4}
+.opts li b{font-family:var(--display);color:var(--gold);min-width:1.2em;font-size:26px}
+.opts li.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 16%,var(--panel2))}
+.why{margin-top:auto;border-inline-start:5px solid var(--ok);background:var(--panel2);border-radius:10px;padding:12px 16px;font-size:21px;line-height:1.5}
+.why b{color:var(--ok)}
+.why .src{color:var(--muted);font-size:18px}
+.scroll{overflow:auto;min-height:0;display:flex;flex-direction:column;gap:14px}
+
+/* العرض ثلاثي الأبعاد */
+.view{position:absolute;top:116px;left:36px;width:1084px;height:640px;border-radius:22px;border:1px solid var(--line);overflow:hidden;background:radial-gradient(ellipse at 50% 30%,#14304a 0,#09172a 75%)}
+.view canvas{display:block;touch-action:none}
+.lbl{position:absolute;transform:translate(-100%,-50%);margin-left:-14px;font-family:var(--display);font-size:22px;padding:4px 14px;border-radius:10px;background:rgba(6,16,28,.86);border:2px solid var(--line);white-space:nowrap;pointer-events:none;transition:opacity .3s}
+.lbl.drop{pointer-events:auto;border-style:dashed;border-color:var(--gold);color:var(--muted);min-width:170px;text-align:center}
+.lbl.drop.hot{background:rgba(240,184,74,.25)}
+.lbl.ok{border-color:var(--ok);color:var(--fg)}
+.viewtools{position:absolute;bottom:16px;left:16px;display:flex;gap:10px}
+.fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--muted);padding:40px}
+.zone{position:absolute;width:300px;border:3px dashed var(--c);border-radius:18px;background:color-mix(in srgb,var(--c) 10%,transparent);padding:14px;display:flex;flex-direction:column;gap:8px;align-items:center}
+.zone h5{margin:0;font-family:var(--display);font-size:26px;color:var(--c)}
+.zone .got{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;font-size:17px}
+.zone .got span{background:var(--panel2);border-radius:8px;padding:2px 10px}
+.zone.hot{background:color-mix(in srgb,var(--c) 28%,transparent)}
+.toast{position:absolute;top:24px;left:50%;transform:translateX(-50%);background:rgba(6,16,28,.92);border:2px solid var(--gold);border-radius:14px;padding:10px 22px;font-size:22px;max-width:90%;text-align:center;pointer-events:none;transition:opacity .3s}
+.apptap{position:absolute;display:flex;gap:14px;bottom:80px;left:50%;transform:translateX(-50%)}
+.apptap button{width:86px;height:86px;border-radius:22px;font-size:16px;font-weight:700;line-height:1.2;box-shadow:0 6px 0 rgba(0,0,0,.35)}
+
+/* الفرق */
+.bottom{position:absolute;top:776px;right:36px;left:36px;height:220px}
+.teams{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;height:100%}
+.team{background:var(--panel);border:3px solid var(--c);border-radius:18px;padding:12px 16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.team h4{margin:0;display:flex;justify-content:space-between;align-items:center;font-family:var(--display);color:var(--c);font-size:30px}
+.st{font-family:var(--body);font-size:19px;font-weight:700;color:var(--muted)}
+.st.ok{color:var(--ok)} .st.bad{color:var(--bad)}
+.picks{display:flex;gap:10px}
+.picks button{flex:1;height:76px;border-radius:14px;background:var(--panel2);border:3px solid var(--line);font-family:var(--display);font-size:40px;transition:transform .1s}
+.picks button:active{transform:scale(.96)}
+.picks.locked button{cursor:default}
+.picks button.sel{background:var(--c);color:#06121d;border-color:var(--c)}
+.picks button.right{border-color:var(--ok)}
+.cons{font-size:20px;line-height:1.45;color:var(--fg);overflow:auto}
+.team.lockedin{box-shadow:0 0 0 6px color-mix(in srgb,var(--c) 25%,transparent)}
+
+/* الأنشطة */
+.act{display:flex;gap:20px;height:100%}
+.turn{width:330px;flex:none;background:var(--panel);border:3px solid var(--c);border-radius:18px;padding:16px;display:flex;flex-direction:column;justify-content:center;gap:6px;text-align:center}
+.turn small{color:var(--muted);font-size:20px}
+.turn b{font-family:var(--display);font-size:40px;color:var(--c)}
+.tray{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-wrap:wrap;gap:12px;align-content:center;justify-content:center}
+.card{background:var(--panel2);border:2px solid var(--line);border-radius:14px;padding:10px 18px;font-size:22px;font-weight:700;cursor:grab;touch-action:none;max-width:420px;text-align:center;line-height:1.35}
+.card.dragging{opacity:.3}
+.ghost{position:fixed;z-index:99;pointer-events:none;background:var(--panel2);border:3px solid var(--gold);border-radius:14px;padding:10px 18px;font-family:var(--body);font-size:22px;font-weight:700;color:var(--fg);transform:translate(-50%,-50%) rotate(-2deg);box-shadow:0 10px 30px rgba(0,0,0,.5);direction:rtl}
+
+/* جدول الفروق */
+.tbl{width:100%;border-collapse:separate;border-spacing:6px;font-size:18px;table-layout:fixed}
+.tray.small .card{font-size:16px;padding:6px 12px;max-width:330px;border-radius:10px}
+.tray{overflow:auto}
+.tbl th{font-family:var(--display);font-size:22px;color:var(--gold);font-weight:500}
+.tbl td.k{font-weight:700;color:var(--muted);width:120px;font-size:17px;line-height:1.3}
+.cell{height:66px;font-size:16px;border:2px dashed var(--line);border-radius:12px;padding:6px 10px;vertical-align:middle;text-align:center;line-height:1.3}
+.cell.hot{border-color:var(--gold);background:rgba(240,184,74,.15)}
+.cell.ok{border:2px solid var(--ok);background:color-mix(in srgb,var(--ok) 12%,transparent)}
+
+/* التحكم */
+.ctrl{position:absolute;bottom:14px;right:36px;left:36px;height:0}
+.ctrlbar{position:absolute;top:116px;left:36px}
+.btn{background:var(--panel2);border:2px solid var(--line);border-radius:12px;padding:8px 22px;font-weight:700;font-size:22px}
+.btn:hover{border-color:var(--gold)}
+.btn.gold{background:var(--gold);color:#1a1405;border-color:var(--gold)}
+.btn:disabled{opacity:.35;cursor:default}
+.nav{position:absolute;bottom:12px;left:36px;display:flex;gap:12px;align-items:center}
+.nav .timer{font-family:var(--display);font-size:30px;min-width:3.4ch;text-align:center;font-variant-numeric:tabular-nums}
+.nav .timer.low{color:var(--bad)}
+
+/* الشاشة الافتتاحية والختامية */
+.big{font-family:var(--display);font-size:64px;line-height:1.15;margin:0;text-wrap:balance}
+.big b{color:var(--gold)}
+.sum{width:100%;border-collapse:collapse;font-size:24px}
+.sum th,.sum td{padding:10px;border-bottom:1px solid var(--line);text-align:center;font-variant-numeric:tabular-nums}
+.sum th:first-child,.sum td:first-child{text-align:right}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div id="stage">
+  <header class="head">
+    <div class="brand">مناقصة كأس العالم <b>2034</b><small>الجولة الأولى: البنية التحتية · التقنية الرقمية · ص 113–114</small></div>
+    <div class="steps" id="steps"></div>
+    <div class="scores" id="scores"></div>
+  </header>
+  <section class="story" id="story"></section>
+  <section class="view" id="view">
+    <div id="labels"></div>
+    <div id="overlay"></div>
+    <div class="toast" id="toast" style="opacity:0"></div>
+    <div class="viewtools"><button class="btn" id="explodeBtn">فكّك الجوال</button><button class="btn" id="spinBtn">تدوير تلقائي</button></div>
+  </section>
+  <section class="bottom" id="bottom"></section>
+  <nav class="nav">
+    <a class="btn" href="index.html" style="text-decoration:none">الرئيسية</a>
+    <button class="btn" id="prevBtn">→ السابق</button>
+    <button class="btn" id="timerBtn">مؤقت النقاش</button><span class="timer" id="timerView"></span>
+    <button class="btn gold" id="revealBtn">اكشف القرارات</button>
+    <button class="btn gold" id="nextBtn">التالي ←</button>
+    <button class="btn" id="resetBtn">بداية جديدة</button>
+  </nav>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+"use strict";
+/* ====================================================================
+   البيانات: الفرق، والمشاهد، والتفرعات (الكتاب ص 113–114، الأهداف 1–6)
+   ==================================================================== */
+const TEAMS=[{name:"الفريق الأول",c:"#4aa8ff"},{name:"الفريق الثاني",c:"#3fd08a"},{name:"الفريق الثالث",c:"#ff9a3c"}];
+const LET=["أ","ب","ج","د"];
+const P_DEC=10, P_DRAG=5;
+const CHAPTERS=["intro","d1","layers","d3","d4","sort","d5","table","end"];
+
+const NODES={
+ intro:{type:"intro",title:"مناقصة «من الفندق إلى المقعد»",
+  text:"عام 2034. السعودية تستضيف كأس العالم، وأكثر من مليون مشجع يصلون من كل قارة. اللجنة المنظمة تريد تطبيقاً واحداً يرافق المشجع من باب فندقه حتى مقعده: التذكرة، والمواصلات، والطريق إلى البوابة. ثلاث شركات سعودية وصلت إلى النهائي، وفي الجولة الأولى ستختبر اللجنة شيئاً واحداً: هل تفهم الشركة ما يجري داخل جوال المشجع؟",
+  scene:"assembled", next:()=> "d1"},
+
+ d1:{type:"dec",obj:1,page:113,title:"صندوق اللجنة",
+  text:"وضع رئيس اللجنة جوالاً على الطاولة وقال: «داخل هذا الجهاز شيء يجعله يعرض التذاكر ويرسم الخرائط. قبل أن تبنوا أي تطبيق، أخبروني: ما البرنامج أصلاً؟»",
+  q:"ما البرنامج؟",
+  opts:["قطعة إلكترونية داخل الجهاز تعالج البيانات","مجموعة من التعليمات الخاصة بالحاسب تقوم بأداء مهمة محددة","الشاشة التي يلمسها المستخدم ليتحكم بالجهاز","شبكة تربط الأجهزة ببعضها"],
+  ans:1,
+  cons:["فتحتم الجهاز تبحثون عن قطعة اسمها «برنامج»… فلم تجدوا إلا رقائق وأسلاكاً. هذه أجهزة، لا برامج.",
+        "أضاءت شاشة الجوال بأسطر من التعليمات. رئيس اللجنة يومئ: هذه هي البداية الصحيحة.",
+        "لمستم الشاشة مرات… الشاشة قطعة من الجهاز، والبرنامج هو ما يخبرها ماذا تعرض.",
+        "الشبكة تنقل البيانات بين الأجهزة، لكنها لا تخبر أي جهاز ماذا يفعل."],
+  why:"البرنامج مجموعة من التعليمات الخاصة بالحاسب تقوم بأداء مهمة محددة، وتنقسم إلى نوعين: برامج النظام والبرامج التطبيقية.",
+  scene:"assembled", onReveal:"code",
+  next:s=> s.right>=2 ? "layers" : "r1"},
+
+ r1:{type:"dec",branch:true,obj:1,page:113,title:"وصفة المندي",
+  text:"رئيس اللجنة يشرح بمثال: «المطبخ فيه قِدر ونار ولحم، لكن المندي لا يُطبخ بلا وصفة: خطوات مرتبة تُنفَّذ بالترتيب. الأجهزة هي المطبخ، والبرنامج هو الوصفة.» ثم يختبركم مرة أخرى:",
+  q:"أيهما برنامج؟",
+  opts:["معالج الجوال (القطعة التي تعالج البيانات)","تطبيق الآلة الحاسبة"],ans:1,
+  cons:["المعالج هو «القِدر»: قطعة من الجهاز تنفّذ، لكنها ليست التعليمات نفسها.","الآلة الحاسبة تعليمات مرتبة تؤدي مهمة محددة: الحساب. إنها الوصفة."],
+  why:"الأجهزة (المعالج والذاكرة والشاشة) تنفّذ، والبرنامج هو التعليمات التي تخبرها ماذا تنفّذ.",
+  scene:"assembled", onReveal:"code", next:()=> "layers"},
+
+ layers:{type:"drag",mode:"layers",obj:2,page:113,title:"افتحوا جوال المشجع",
+  text:"سلّمت اللجنة كل شركة جوال مشجع لتفحصه. فكّكنا الجوال إلى طبقاته. في كل دور، يسحب فريق اسم طبقة إلى مكانها الصحيح. فكّروا: من يعمل فوق من؟",
+  items:[{t:"الأجهزة",k:0},{t:"نظام التشغيل",k:1},{t:"البرنامج التطبيقي",k:2},{t:"المستخدم",k:3}],
+  done:"الأجهزة في الأساس، ونظام التشغيل فوقها يديرها، والبرنامج التطبيقي يعمل فوق نظام التشغيل، والمستخدم يتعامل مع التطبيق. نظام التشغيل هو الوسيط بين المستخدم والأجهزة.",
+  scene:"exploded", next:()=> "d3"},
+
+ d3:{type:"dec",obj:2,page:113,title:"الشاشة السوداء",
+  text:"وصلت إلى مقر شركتكم مئة جهاز جديد لفريق التطوير. شغّلتموها: الأضواء تعمل والمراوح تدور، لكن الشاشات سوداء ولا شيء يستجيب. انظروا إلى الجوال: طبقة كاملة مفقودة.",
+  q:"ما أول ما يجب تثبيته؟",
+  opts:["تطبيق التذاكر","نظام التشغيل","متصفح الويب","برنامج تعريف الطابعة"],ans:1,
+  cons:["ثبّتم تطبيق التذاكر… فلم يجد من يشغّله. الشاشة ما زالت سوداء.",
+        "عادت طبقة نظام التشغيل إلى مكانها، فأضاءت الشاشة واستجابت الأجهزة.",
+        "المتصفح برنامج تطبيقي يحتاج نظاماً يعمل فوقه. لم يتغير شيء.",
+        "تعريف الطابعة من برامج النظام فعلاً، لكنه لا يكفي وحده لتشغيل الجهاز كله."],
+  why:"برامج النظام هي المسؤولة عن إدارة الأجهزة، وتتضمن نظام التشغيل وأدوات إدارة الملفات. نظام التشغيل هو الوسيط بين المستخدم والأجهزة. أمثلته: ويندوز، أندرويد، macOS، iOS.",
+  scene:"noOS", onReveal:"osBack",
+  next:s=> s.right>=2 ? "d4" : "r2"},
+
+ r2:{type:"lab",branch:true,obj:2,page:113,title:"مختبر: جوال بلا نظام",
+  text:"اللجنة تريد أن تروا بأعينكم. هذا جوال حُذف منه نظام التشغيل. ليجرّب ممثل كل فريق أن يفتح التطبيقات… ثم أعيدوا نظام التشغيل وجرّبوا مرة أخرى.",
+  why:"بدون نظام التشغيل لا تستطيع التطبيقات الوصول إلى الأجهزة. برامج النظام تعمل باستمرار في ذاكرة الحاسب، وتقدّم الخدمات لبرامج التطبيقات.",
+  scene:"noOS", next:()=> "d4"},
+
+ d4:{type:"dec",obj:3,page:113,title:"البوابات الصامتة",
+  text:"في الملعب التجريبي رُكّبت بوابات الدخول الذكية ووُصلت بحاسب التحكم، لكن نظام التشغيل لا يتعرف عليها. المشجعون يتجمعون أمام البوابة المغلقة.",
+  q:"ماذا ينقص حاسب التحكم؟",
+  opts:["برنامج تعريف البوابات","معالج النصوص","تطبيق تواصل اجتماعي","نظام تشغيل ثانٍ"],ans:0,
+  cons:["ثبّتم برنامج التعريف، فتعرّف نظام التشغيل على البوابات وفُتحت أمام المشجعين.",
+        "معالج النصوص يكتب المستندات، ولا يعرّف الأجهزة بنظام التشغيل.",
+        "تطبيق التواصل لا يعرف كيف يتحدث مع البوابات.",
+        "الحاسب فيه نظام تشغيل يعمل؛ الناقص برنامج يعرّفه بالبوابة تحديداً."],
+  why:"من أمثلة برامج النظام: أنظمة التشغيل، وبرامج تعريف المكونات المادية مثل برنامج تعريف الطابعة. بها يتعرف نظام التشغيل على الجهاز ويديره.",
+  scene:"gate", onReveal:"gateOpen", next:()=> "sort"},
+
+ sort:{type:"drag",mode:"sort",obj:"3 و5",page:"113–114",title:"قائمة الملعب",
+  text:"أرسلت اللجنة قائمة البرامج التي ستُثبَّت على أجهزة الملعب. في كل دور، يسحب فريق برنامجاً إلى طبقته في الجوال: برامج النظام أم البرامج التطبيقية؟",
+  items:[{t:"ويندوز",k:"s"},{t:"معالج النصوص",k:"a"},{t:"أندرويد",k:"s"},{t:"الآلة الحاسبة",k:"a"},{t:"برنامج تعريف الطابعة",k:"s"},{t:"مستعرض الويب",k:"a"},{t:"iOS",k:"s"},{t:"تحرير الفيديو",k:"a"},{t:"جداول البيانات",k:"a"}],
+  done:"برامج النظام تدير الأجهزة (أنظمة التشغيل وبرامج التعريف). والبرامج التطبيقية صُممت لتنفيذ مهام منظمة مفيدة للمستخدم، مثل معالج النصوص وجداول البيانات والحاسبة والمستعرض وتحرير الفيديو.",
+  scene:"exploded", next:()=> "d5"},
+
+ d5:{type:"dec",obj:6,page:114,title:"إعلان المنافس",
+  text:"شركة منافسة خارج المناقصة نشرت إعلاناً في الصحف: «تطبيقنا يعمل على أي جوال… حتى من دون نظام تشغيل!» اللجنة تسأل الشركات الثلاث عن رأيها.",
+  q:"هل تصدّقون الإعلان؟",
+  opts:["نعم، التطبيقات الحديثة تعمل مستقلة","لا، البرامج التطبيقية لا تعمل مستقلة بل في بيئة برامج النظام","نعم، إذا كان الجوال جديداً","لا، لأن التطبيق يحتاج إلى الإنترنت فقط"],ans:1,
+  cons:["صدّقتم الإعلان وجرّبتم… فلم يفتح التطبيق أصلاً.",
+        "رفعتم اعتراضاً إلى اللجنة، فشكرتكم: الإعلان مضلِّل.",
+        "الجوال الجديد يأتي بنظام تشغيل؛ ولو حُذف لما عمل أي تطبيق.",
+        "قلتم «لا» لكن بالسبب الخطأ: التطبيق يحتاج نظام التشغيل، لا الإنترنت فقط."],
+  why:"من جدول الفروق (الاستقلالية): برامج النظام يمكن أن تعمل بشكل مستقل، أما البرامج التطبيقية فلا تستطيع العمل بشكل مستقل، بل تعمل في بيئة برنامج النظام.",
+  scene:"exploded", onReveal:"appOnOS", next:()=> "table"},
+
+ table:{type:"drag",mode:"table",obj:6,page:114,title:"ملف المقارنة",
+  text:"آخر طلب في الجولة: ملف مقارنة بين نوعي البرامج يُرفق بالمناقصة. في كل دور، يسحب فريق عبارة إلى خانتها في الجدول.",
+  rows:["الاستخدام","وقت تثبيت البرنامج","التعامل مع المستخدم","الاستقلالية"],
+  items:[{t:"تستخدم لتشغيل مكونات الحاسب.",r:0,c:0},{t:"تستخدم لأداء مهمة محددة.",r:0,c:1},
+         {t:"يتم تثبيت برامج النظام على أجهزة الحاسب عند تثبيت نظام التشغيل.",r:1,c:0},{t:"يتم تثبيت البرنامج التطبيقي وفقاً لحاجة المستخدم.",r:1,c:1},
+         {t:"لا يتعامل المستخدم عادة مع برامج النظام بشكل مباشر، وإنما من خلال البرامج التطبيقية.",r:2,c:0},{t:"يتعامل المستخدم مع البرامج التطبيقية بشكل مباشر.",r:2,c:1},
+         {t:"يمكن أن تعمل برامج النظام بشكل مستقل.",r:3,c:0},{t:"لا تستطيع البرامج التطبيقية العمل بشكل مستقل، بل تعمل في بيئة برنامج النظام.",r:3,c:1}],
+  done:"هذا هو جدول الاختلافات بين برامج النظام والبرامج التطبيقية في الكتاب، صفحة 114.",
+  scene:"exploded", next:()=> "end"},
+
+ end:{type:"end",title:"انتهت الجولة الأولى",
+  text:"الشركات الثلاث فهمت ما يجري داخل جوال المشجع. وصلت رسالة من اللجنة: «في الجولة القادمة لن نسأل عن الأجهزة. سنسأل عن المشجع نفسه.»",
+  exit:"تذكرة الخروج: كل فريق يذكر برنامج نظام وبرنامجاً تطبيقياً من جوال أحد أعضائه، ولماذا صنّفه هكذا.",
+  scene:"assembledLabels"}
+};
+
+/* ====================================================================
+   الحالة
+   ==================================================================== */
+const KEY="wc34-s1-v2";
+let S=null;
+function fresh(){return {node:"intro",hist:[],scores:[0,0,0],dec:{},drag:{},log:{right:[0,0,0],tries:[0,0,0],drag:[0,0,0]}};}
+try{S=JSON.parse(localStorage.getItem(KEY)||"null");}catch(e){}
+if(!S||!NODES[S.node]) S=fresh();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}};
+const decState=id=>S.dec[id]||(S.dec[id]={c:[null,null,null],rev:false});
+const dragState=id=>S.drag[id]||(S.drag[id]={placed:{},turn:0,pool:null});
+
+/* ====================================================================
+   تمدد المسرح
+   ==================================================================== */
+const stage=document.getElementById("stage");
+let SCALE=1;
+function fit(){
+ const w=innerWidth,h=innerHeight; SCALE=Math.min(w/1920,h/1080);
+ stage.style.transform=`scale(${SCALE})`;
+ stage.style.left=((w-1920*SCALE)/2)+"px"; stage.style.top=((h-1080*SCALE)/2)+"px";
+ if(R.renderer) R.renderer.setPixelRatio(Math.min(2,(devicePixelRatio||1)*SCALE*1.2));
+}
+addEventListener("resize",fit);
+
+/* ====================================================================
+   المشهد ثلاثي الأبعاد
+   ==================================================================== */
+const R={};
+const VIEW_W=1084, VIEW_H=640;
+const view=document.getElementById("view");
+const LAYER_NAMES=["الأجهزة","نظام التشغيل","البرنامج التطبيقي","المستخدم"];
+const ASM=[0,0.16,0.32,0.95], EXP=[0,1.15,2.3,3.55];
+let explode=0, explodeTarget=0, spin=true;
+const CAMS={asm:{p:[5.6,5.6,7.2],t:[0,0.6,0]},exp:{p:[6.8,4.1,7.6],t:[0,1.9,0]}};
+let camGoal=null;
+
+function canvasTex(w,h,draw){const c=document.createElement("canvas");c.width=w;c.height=h;const g=c.getContext("2d");draw(g,w,h);const t=new THREE.CanvasTexture(c);t.anisotropy=4;return {tex:t,ctx:g,canvas:c};}
+
+function init3D(){
+ if(!window.THREE){ view.insertAdjacentHTML("afterbegin",'<div class="fallback">تعذّر تحميل المشهد ثلاثي الأبعاد. تأكد من الاتصال بالإنترنت ثم أعد تحميل الصفحة. يمكنك إكمال القصة والقرارات بدونه.</div>'); return; }
+ const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+ renderer.setSize(VIEW_W,VIEW_H,false); renderer.domElement.style.width=VIEW_W+"px"; renderer.domElement.style.height=VIEW_H+"px";
+ renderer.outputEncoding=THREE.sRGBEncoding;
+ view.insertBefore(renderer.domElement,view.firstChild);
+ const scene=new THREE.Scene();
+ scene.fog=new THREE.Fog(0x09172a,14,30);
+ const cam=new THREE.PerspectiveCamera(38,VIEW_W/VIEW_H,0.1,100);
+ cam.position.set(7.5,7.2,9.5);
+ const ctl=new THREE.OrbitControls(cam,renderer.domElement);
+ ctl.target.set(0,1.4,0); ctl.enableDamping=true; ctl.enablePan=false; ctl.minDistance=7; ctl.maxDistance=18; ctl.maxPolarAngle=Math.PI*0.47;
+ ctl.addEventListener("start",()=>{spin=false;updSpin();});
+
+ scene.add(new THREE.HemisphereLight(0xbcd8ff,0x0b1a10,0.75));
+ const key=new THREE.DirectionalLight(0xffffff,1.0); key.position.set(5,10,6); scene.add(key);
+ const rim=new THREE.DirectionalLight(0xf0b84a,0.55); rim.position.set(-6,4,-6); scene.add(rim);
+
+ /* أرضية الملعب */
+ const pitch=canvasTex(1024,1024,(g,w,h)=>{
+  const grd=g.createRadialGradient(w/2,h/2,50,w/2,h/2,w/2); grd.addColorStop(0,"#1b6a43"); grd.addColorStop(1,"#0b2a1c");
+  g.fillStyle=grd; g.fillRect(0,0,w,h);
+  for(let i=0;i<10;i++){g.fillStyle=i%2?"rgba(255,255,255,.03)":"rgba(0,0,0,.05)";g.fillRect(i*w/10,0,w/10,h);}
+  g.strokeStyle="rgba(255,255,255,.55)"; g.lineWidth=6;
+  g.strokeRect(120,220,w-240,h-440); g.beginPath(); g.moveTo(w/2,220); g.lineTo(w/2,h-220); g.stroke();
+  g.beginPath(); g.arc(w/2,h/2,110,0,Math.PI*2); g.stroke();
+  g.strokeRect(120,h/2-150,140,300); g.strokeRect(w-260,h/2-150,140,300);
+ });
+ const disc=new THREE.Mesh(new THREE.CircleGeometry(9,64),new THREE.MeshStandardMaterial({map:pitch.tex,roughness:.95}));
+ disc.rotation.x=-Math.PI/2; disc.position.y=-0.6; scene.add(disc);
+ const ring=new THREE.Mesh(new THREE.TorusGeometry(9,0.06,8,96),new THREE.MeshBasicMaterial({color:0xf0b84a})); ring.rotation.x=Math.PI/2; ring.position.y=-0.58; scene.add(ring);
+
+ const phone=new THREE.Group(); scene.add(phone);
+ const W=2.6,D=5.2;
+ const layers=[];
+
+ /* 1. الأجهزة: لوحة إلكترونية ورقائق وبطارية */
+ const pcbTex=canvasTex(512,1024,(g,w,h)=>{
+  g.fillStyle="#0f5a3a";g.fillRect(0,0,w,h);
+  g.strokeStyle="#3fd08a";g.globalAlpha=.55;g.lineWidth=4;
+  for(let i=0;i<40;i++){g.beginPath();let x=Math.random()*w,y=Math.random()*h;g.moveTo(x,y);for(let k=0;k<4;k++){if(k%2)x+=(Math.random()-.5)*220;else y+=(Math.random()-.5)*220;g.lineTo(x,y);}g.stroke();}
+  g.globalAlpha=1;g.fillStyle="#f0b84a";for(let i=0;i<70;i++){g.beginPath();g.arc(Math.random()*w,Math.random()*h,5,0,7);g.fill();}
+ });
+ const L0=new THREE.Group();
+ L0.add(new THREE.Mesh(new THREE.BoxGeometry(W,0.12,D),new THREE.MeshStandardMaterial({map:pcbTex.tex,roughness:.6,metalness:.2})));
+ const chipMat=new THREE.MeshStandardMaterial({color:0x1a1f27,roughness:.4,metalness:.6});
+ [[0,0.15,-1.2,1.0,0.12,1.0],[-0.7,0.13,0.2,0.6,0.08,0.9],[0.7,0.13,0.2,0.5,0.08,0.5],[0,0.17,1.4,2.0,0.18,1.4]].forEach(([x,y,z,a,b,c],i)=>{
+  const m=new THREE.Mesh(new THREE.BoxGeometry(a,b,c), i===3?new THREE.MeshStandardMaterial({color:0x2d3a4f,roughness:.5,metalness:.3}):chipMat); m.position.set(x,y,z); L0.add(m);});
+ const cpuTex=canvasTex(256,256,(g)=>{g.fillStyle="#1a1f27";g.fillRect(0,0,256,256);g.fillStyle="#f0b84a";g.font="bold 64px Tahoma";g.textAlign="center";g.fillText("CPU",128,150);});
+ const cpuTop=new THREE.Mesh(new THREE.PlaneGeometry(0.9,0.9),new THREE.MeshBasicMaterial({map:cpuTex.tex})); cpuTop.rotation.x=-Math.PI/2; cpuTop.position.set(0,0.215,-1.2); L0.add(cpuTop);
+ layers.push(L0);
+
+ /* 2. نظام التشغيل: لوح أزرق شفاف بنوافذ */
+ const osTex=canvasTex(512,1024,(g,w,h)=>{
+  g.fillStyle="#1d4f86";g.fillRect(0,0,w,h);
+  g.strokeStyle="rgba(170,215,255,.6)";g.lineWidth=3;
+  for(let y=60;y<h;y+=120){for(let x=40;x<w-40;x+=150){g.strokeRect(x,y,120,90);}}
+  g.fillStyle="rgba(255,255,255,.85)";g.font="bold 46px Tahoma";g.textAlign="center";g.fillText("OS",w/2,h/2+16);
+ });
+ const L1=new THREE.Group();
+ const osMat=new THREE.MeshStandardMaterial({map:osTex.tex,transparent:true,opacity:.9,roughness:.3,metalness:.1,emissive:0x0d3a6a,emissiveIntensity:.6});
+ L1.add(new THREE.Mesh(new THREE.BoxGeometry(W,0.08,D),osMat));
+ layers.push(L1);
+
+ /* 3. البرامج التطبيقية: أيقونات تطبيقات، والذهبية تطبيقنا */
+ const L2=new THREE.Group();
+ L2.add(new THREE.Mesh(new THREE.BoxGeometry(W,0.06,D),new THREE.MeshStandardMaterial({color:0x1f2a40,roughness:.5,transparent:true,opacity:.85})));
+ const appCols=[0x4aa8ff,0x3fd08a,0xff9a3c,0xe15b8a,0x8f7cff,0x39c6d6,0xf0b84a,0x6c7a91];
+ const appIcons=[];
+ for(let r=0;r<4;r++)for(let c=0;c<3;c++){const i=r*3+c; if(i>9)continue;
+  const col=appCols[i%appCols.length];
+  const m=new THREE.Mesh(new THREE.BoxGeometry(0.55,0.14,0.55),new THREE.MeshStandardMaterial({color:col,roughness:.35,emissive:col,emissiveIntensity:.15}));
+  m.position.set((c-1)*0.8,0.1,(r-1.5)*0.95); L2.add(m); appIcons.push(m);}
+ const goldApp=new THREE.Mesh(new THREE.BoxGeometry(0.7,0.2,0.7),new THREE.MeshStandardMaterial({color:0xf0b84a,emissive:0xf0b84a,emissiveIntensity:.45,metalness:.4,roughness:.3}));
+ goldApp.position.set(0,0.13,1.9); L2.add(goldApp);
+ layers.push(L2);
+
+ /* 4. المستخدم: مشجع فوق الجوال */
+ const L3=new THREE.Group();
+ const fanMat=new THREE.MeshStandardMaterial({color:0xf0b84a,emissive:0x7a5512,emissiveIntensity:.35,roughness:.4});
+ const body=new THREE.Mesh(new THREE.CylinderGeometry(0.32,0.42,0.9,24),fanMat); body.position.y=0.55;
+ const head=new THREE.Mesh(new THREE.SphereGeometry(0.3,24,16),fanMat); head.position.y=1.25;
+ const scarf=new THREE.Mesh(new THREE.TorusGeometry(0.3,0.07,8,24),new THREE.MeshStandardMaterial({color:0x1b8a4a})); scarf.rotation.x=Math.PI/2; scarf.position.y=0.98;
+ const halo=new THREE.Mesh(new THREE.RingGeometry(0.9,1.0,48),new THREE.MeshBasicMaterial({color:0xf0b84a,side:THREE.DoubleSide,transparent:true,opacity:.6})); halo.rotation.x=-Math.PI/2; halo.position.y=0.02;
+ L3.add(body,head,scarf,halo);
+ layers.push(L3);
+
+ layers.forEach(l=>phone.add(l));
+
+ /* الهيكل والشاشة */
+ const shell=new THREE.Group();
+ const frame=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(W+0.18,0.55,D+0.18)),new THREE.LineBasicMaterial({color:0x9fb8d0,transparent:true,opacity:.7}));
+ frame.position.y=0.2; shell.add(frame);
+ const scr=canvasTex(512,1024,()=>{});
+ const screen=new THREE.Mesh(new THREE.PlaneGeometry(W,D),new THREE.MeshBasicMaterial({map:scr.tex,transparent:true,opacity:.95}));
+ screen.rotation.x=-Math.PI/2; screen.position.y=0.5; shell.add(screen);
+ phone.add(shell);
+
+ /* بوابة الملعب */
+ const gate=new THREE.Group();
+ const postMat=new THREE.MeshStandardMaterial({color:0x8aa0b8,metalness:.6,roughness:.35});
+ const p1=new THREE.Mesh(new THREE.BoxGeometry(0.35,1.6,0.35),postMat); p1.position.set(-0.9,0.2,0);
+ const p2=p1.clone(); p2.position.x=0.9;
+ const arm=new THREE.Mesh(new THREE.BoxGeometry(1.6,0.12,0.12),new THREE.MeshStandardMaterial({color:0xef6450,emissive:0xef6450,emissiveIntensity:.4}));
+ const armPivot=new THREE.Group(); armPivot.position.set(-0.75,0.55,0); arm.position.x=0.8; armPivot.add(arm);
+ gate.add(p1,p2,armPivot); gate.position.set(-4.6,0,-1.5); gate.visible=false; scene.add(gate);
+ const linkMat=new THREE.LineDashedMaterial({color:0xef6450,dashSize:.25,gapSize:.18});
+ const linkGeo=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-3.7,0.6,-1.5),new THREE.Vector3(-1.4,0.1,-1.2)]);
+ const link=new THREE.Line(linkGeo,linkMat); link.computeLineDistances(); link.visible=false; scene.add(link);
+
+ Object.assign(R,{renderer,scene,cam,ctl,phone,layers,shell,screen,scr,appIcons,goldApp,gate,arm:armPivot,link,linkMat,osMat,extra:[],
+  osOffset:0,osOffsetT:0,flash:{},gateT:0,gateOpen:0,screenMode:""});
+ fit();
+ let last=performance.now();
+ (function loop(now){
+  const dt=Math.min(.05,(now-last)/1000); last=now;
+  explode+= (explodeTarget-explode)*Math.min(1,dt*4);
+  R.osOffset+= (R.osOffsetT-R.osOffset)*Math.min(1,dt*3.2);
+  layers.forEach((l,i)=>{ l.position.y=ASM[i]+(EXP[i]-ASM[i])*explode; });
+  L1.position.x=R.osOffset*5.5; L1.position.y+=R.osOffset*1.5;
+  shell.visible=explode<0.15; frame.material.opacity=0.7*(1-explode/0.15);
+  L3.visible = explode>0.15;
+  head.position.y=1.25+Math.sin(now/400)*0.04;
+  if(spin) phone.rotation.y+=dt*0.35;
+  R.gateOpen+=(R.gateT-R.gateOpen)*Math.min(1,dt*3); R.arm.rotation.z=R.gateOpen*1.35;
+  Object.entries(R.flash).forEach(([i,t])=>{ const mats=[]; layers[i].traverse(o=>{if(o.material&&o.material.emissive)mats.push(o.material);}); const v=Math.max(0,t-now)/1200; mats.forEach(m=>m.emissiveIntensity=(m.userData.base??(m.userData.base=m.emissiveIntensity))+v*1.4); if(t<now) delete R.flash[i]; });
+  if(camGoal){ const k=Math.min(1,dt*3); cam.position.lerp(camGoal.p,k); ctl.target.lerp(camGoal.t,k); if(cam.position.distanceTo(camGoal.p)<0.02) camGoal=null; }
+  ctl.update(); renderer.render(scene,cam); placeLabels();
+  requestAnimationFrame(loop);
+ })(last);
+}
+
+/* شاشة الجوال */
+function drawScreen(mode){
+ if(!R.scr||R.screenMode===mode) return; R.screenMode=mode;
+ const g=R.scr.ctx,w=512,h=1024; g.clearRect(0,0,w,h);
+ const rr=(x,y,ww,hh,r)=>{g.beginPath();g.moveTo(x+r,y);g.arcTo(x+ww,y,x+ww,y+hh,r);g.arcTo(x+ww,y+hh,x,y+hh,r);g.arcTo(x,y+hh,x,y,r);g.arcTo(x,y,x+ww,y,r);g.closePath();};
+ if(mode==="black"){ g.fillStyle="#030608"; g.fillRect(0,0,w,h); }
+ else if(mode==="code"){
+  g.fillStyle="#04101c";g.fillRect(0,0,w,h);g.font="28px Consolas, monospace";g.textAlign="left";
+  const lines=["when ticketButton.Click","  show ticket(fan.id)","  route to gate 7","if seat.found","  guide(fan, seat)","repeat every 5 s","  update position","end"];
+  lines.forEach((l,i)=>{g.fillStyle=i%2?"#3fd08a":"#f0b84a";g.fillText(l,40,140+i*90);});
+ } else {
+  const grd=g.createLinearGradient(0,0,0,h);grd.addColorStop(0,"#0f3a5c");grd.addColorStop(1,"#0a1d33");g.fillStyle=grd;g.fillRect(0,0,w,h);
+  g.fillStyle="#f0b84a";rr(40,80,w-80,220,30);g.fill();
+  g.fillStyle="#1a1405";g.font="bold 54px Tahoma";g.textAlign="center";g.direction="rtl";g.fillText("تذكرتي",w/2,175);
+  g.font="34px Tahoma";g.fillText("مباراة الافتتاح · البوابة 7",w/2,245);
+  const cols=["#4aa8ff","#3fd08a","#ff9a3c","#8f7cff","#39c6d6","#e15b8a"];
+  for(let i=0;i<6;i++){g.fillStyle=cols[i];rr(60+(i%3)*140,380+Math.floor(i/3)*160,110,110,24);g.fill();}
+  g.fillStyle="rgba(255,255,255,.8)";g.font="32px Tahoma";g.fillText("من الفندق إلى المقعد",w/2,760);
+ }
+ R.scr.tex.needsUpdate=true;
+}
+
+/* أسماء الطبقات فوق المشهد */
+const labelsEl=document.getElementById("labels");
+let labelMode="none"; // none | names | drop | done
+function anchorOf(i){
+ const l=R.layers[i]; l.updateMatrixWorld();
+ const v=(i===3?new THREE.Vector3(-0.7,0.7,0):new THREE.Vector3(-1.45,0.05,0)).applyMatrix4(l.matrixWorld);
+ v.project(R.cam); return {x:(v.x+1)/2*VIEW_W,y:(1-v.y)/2*VIEW_H,vis:v.z<1};
+}
+function placeLabels(){
+ if(!R.cam) return;
+ labelsEl.querySelectorAll(".lbl").forEach(el=>{ const i=+el.dataset.i; const a=anchorOf(i);
+  const hide = (i===3 && explode<.15) || (i===1 && R.osOffset>.3);
+  el.style.left=a.x+"px"; el.style.top=a.y+"px"; el.style.opacity=(a.vis&&!hide)?1:0; });
+}
+function setLabels(mode,placed){
+ labelMode=mode; labelsEl.innerHTML="";
+ if(mode==="none"||!R.cam) return;
+ LAYER_NAMES.forEach((n,i)=>{
+  const el=document.createElement("div"); el.dataset.i=i;
+  if(mode==="names"){ el.className="lbl ok"; el.textContent=n; }
+  else { const got=placed&&placed[i]; el.className="lbl drop"+(got?" ok":""); el.dataset.drop="layer:"+i; el.textContent=got?n:"اسحب هنا"; }
+  labelsEl.appendChild(el);
+ });
+}
+
+/* إعداد المشهد لكل عقدة */
+function setCam(name,stopSpin){ if(!R.cam) return; const c=CAMS[name]; camGoal={p:new THREE.Vector3(...c.p),t:new THREE.Vector3(...c.t)}; if(stopSpin){ spin=false; R.phone.rotation.y=0; updSpin(); } }
+function setScene(kind){
+ if(!R.scene) return;
+ setTimeout(()=>{$("explodeBtn").textContent=explodeTarget>0.5?"اجمع الجوال":"فكّك الجوال";},0);
+ R.gate.visible=false; R.link.visible=false; R.osOffsetT=0; R.gateT=0;
+ R.extra.forEach(m=>m.parent&&m.parent.remove(m)); R.extra=[];
+ if(kind==="assembled"){ explodeTarget=0; drawScreen("app"); setLabels("none"); setCam("asm"); }
+ if(kind==="assembledLabels"){ explodeTarget=1; drawScreen("app"); setLabels("names"); setCam("exp",true); }
+ if(kind==="exploded"){ explodeTarget=1; drawScreen("app"); setLabels("names"); setCam("exp",true); }
+ if(kind==="noOS"){ explodeTarget=1; R.osOffsetT=1; drawScreen("black"); setLabels("none"); setCam("exp",true); }
+ if(kind==="gate"){ explodeTarget=0; drawScreen("app"); R.gate.visible=true; R.link.visible=true; R.linkMat.color.set(0xef6450); R.arm.children[0].material.color.set(0xef6450); R.arm.children[0].material.emissive.set(0xef6450); setLabels("none"); setCam("asm",true); }
+}
+function reaction(kind){
+ if(!R.scene) return;
+ const now=performance.now();
+ if(kind==="code"){ explodeTarget=0; R.screenMode=""; drawScreen("code"); }
+ if(kind==="osBack"){ R.osOffsetT=0; R.flash[1]=now+1600; setTimeout(()=>{R.screenMode="";drawScreen("app");},700); setLabels("names"); }
+ if(kind==="gateOpen"){ R.gateT=1; R.linkMat.color.set(0x3ccf86); const a=R.arm.children[0].material; a.color.set(0x3ccf86); a.emissive.set(0x3ccf86); }
+ if(kind==="appOnOS"){ explodeTarget=1; R.flash[1]=now+1500; R.flash[2]=now+1500; setLabels("names"); }
+}
+function addIconTo(layer,color){
+ if(!R.scene) return;
+ const m=new THREE.Mesh(new THREE.BoxGeometry(0.42,0.12,0.42),new THREE.MeshStandardMaterial({color,emissive:color,emissiveIntensity:.5}));
+ const n=R.extra.filter(x=>x.userData.layer===layer).length;
+ m.userData.layer=layer; m.position.set(-1.05+(n%3)*0.5,0.16,-2.2+Math.floor(n/3)*0.5); R.layers[layer].add(m); R.extra.push(m); R.flash[layer]=performance.now()+800;
+}
+
+/* ====================================================================
+   الواجهة
+   ==================================================================== */
+const $=id=>document.getElementById(id);
+const storyEl=$("story"), bottomEl=$("bottom"), overlay=$("overlay");
+let toastT=0;
+function toast(msg){ const t=$("toast"); t.textContent=msg; t.style.opacity=1; clearTimeout(toastT); toastT=setTimeout(()=>t.style.opacity=0,2600); }
+function renderScores(bump){
+ $("scores").innerHTML=TEAMS.map((t,k)=>`<span class="chip ${bump&&bump.includes(k)?"bump":""}" style="--c:${t.c}"><i></i>${t.name}<span class="pts">${S.scores[k]}</span></span>`).join("");
+ if(bump) setTimeout(()=>document.querySelectorAll(".chip.bump").forEach(c=>c.classList.remove("bump")),350);
+}
+function renderSteps(){
+ const ch=CHAPTERS.indexOf(S.node==="r1"?"d1":S.node==="r2"?"d3":S.node);
+ $("steps").innerHTML=CHAPTERS.map((_,i)=>`<span class="${i<ch?"done":i===ch?"on":""}"></span>`).join("");
+}
+function kickHTML(n){
+ return `<div class="kick">${n.obj!==undefined?`<span class="tag obj">الهدف ${n.obj}</span>`:""}${n.page?`<span class="tag">الكتاب ص ${n.page}</span>`:""}${n.branch?`<span class="tag branch">مسار الإنقاذ</span>`:""}</div>`;
+}
+
+function render(){
+ stopTimer(); overlay.innerHTML="";
+ const n=NODES[S.node];
+ renderSteps(); renderScores();
+ setScene(n.scene);
+ $("prevBtn").disabled=S.hist.length===0;
+ $("timerBtn").hidden=!(n.type==="dec"); $("timerView").textContent="";
+ $("revealBtn").hidden=n.type!=="dec";
+ $("nextBtn").textContent= n.type==="end"?"بداية جديدة":"التالي ←";
+ if(n.type==="intro") renderIntro(n);
+ if(n.type==="dec") renderDec(n);
+ if(n.type==="drag") renderDrag(n);
+ if(n.type==="lab") renderLab(n);
+ if(n.type==="end") renderEnd(n);
+ updateNext();
+ save();
+}
+function updateNext(){
+ const n=NODES[S.node]; let ok=true;
+ if(n.type==="dec") ok=decState(S.node).rev;
+ if(n.type==="drag") ok=dragDone(n);
+ if(n.type==="lab") ok=!!S.labDone;
+ $("nextBtn").disabled=!ok;
+ $("nextBtn").classList.toggle("gold",ok);
+}
+
+function renderIntro(n){
+ storyEl.innerHTML=`<div class="kick"><span class="tag">الإحاطة</span><span class="tag">الوحدة الثالثة · الدرس الأول</span></div>
+  <h2 class="big">مناقصة <b>«من الفندق إلى المقعد»</b></h2><p class="narr">${n.text}</p>
+  <p class="narr" style="color:var(--muted)">في كل موقف: يتناقش الفريق، ثم يلمس ممثله اختيار فريقه. الاختيارات تبقى مخفية حتى يكشفها المعلم، ولكل اختيار عاقبته في القصة.</p>`;
+ bottomEl.innerHTML=`<div class="teams">${TEAMS.map(t=>`<div class="team" style="--c:${t.c}"><h4>${t.name}</h4><div class="cons">شركة سعودية في نهائي المناقصة. قيمتها تبدأ من الصفر، وكل قرار صحيح يرفعها.</div></div>`).join("")}</div>`;
+}
+
+function renderDec(n){
+ const st=decState(S.node);
+ storyEl.innerHTML=`${kickHTML(n)}<h2>${n.title}</h2><div class="scroll">${st.rev?"":`<p class="narr">${n.text}</p>`}<p class="q">${n.q}</p>
+  <ol class="opts">${n.opts.map((o,k)=>`<li class="${st.rev&&k===n.ans?"right":""}"><b>${LET[k]}</b><span>${o}</span></li>`).join("")}</ol></div>
+  ${st.rev?`<div class="why"><b>من الكتاب:</b> ${n.why} <span class="src">(ص ${n.page})</span></div>`:""}`;
+ bottomEl.innerHTML=`<div class="teams">${TEAMS.map((t,k)=>{
+  const c=st.c[k];
+  const status= st.rev ? (c===null?'<span class="st">لم يقرر</span>':c===n.ans?`<span class="st ok">✓ صحيح +${P_DEC}</span>`:'<span class="st bad">✗ قرار خاطئ</span>')
+                       : (c===null?'<span class="st">يتناقش…</span>':'<span class="st ok">🔒 تم القرار</span>');
+  const picks=n.opts.map((_,o)=>`<button data-t="${k}" data-o="${o}" class="${st.rev?((c===o?"sel ":"")+(o===n.ans?"right":"")):""}" aria-label="${t.name} يختار ${LET[o]}">${LET[o]}</button>`).join("");
+  const cons= st.rev && c!==null ? `<div class="cons">${n.cons[c]}</div>` : "";
+  return `<div class="team ${!st.rev&&c!==null?"lockedin":""}" style="--c:${t.c}"><h4>${t.name}${status}</h4><div class="picks ${st.rev?"locked":""}">${picks}</div>${cons}</div>`;
+ }).join("")}</div>`;
+ bottomEl.querySelectorAll(".picks button").forEach(b=>b.onclick=()=>{
+  if(st.rev) return; const k=+b.dataset.t,o=+b.dataset.o; st.c[k]=(st.c[k]===o?null:o); save(); renderDec(n); });
+ $("revealBtn").disabled=st.rev;
+ if(st.rev && n.onReveal) reaction(n.onReveal);
+}
+function doReveal(){
+ const n=NODES[S.node]; if(n.type!=="dec") return; const st=decState(S.node); if(st.rev) return;
+ st.rev=true; const bump=[];
+ st.c.forEach((c,k)=>{ if(c===null) return; S.log.tries[k]++; if(c===n.ans){ S.scores[k]+=P_DEC; S.log.right[k]++; bump.push(k);} });
+ save(); renderDec(n); renderScores(bump); updateNext();
+ const right=st.c.filter(c=>c===n.ans).length;
+ const nx=n.next({right}); if(nx==="r1"||nx==="r2") toast("أغلب الشركات لم تصب. اللجنة تفتح مسار الإنقاذ.");
+}
+
+/* ---------- السحب والإفلات ---------- */
+function dragDone(n){ const d=dragState(S.node); return Object.keys(d.placed).length>=n.items.length; }
+function renderDrag(n){
+ const d=dragState(S.node);
+ if(!d.pool){ d.pool=n.items.map((_,i)=>i); }
+ const remaining=d.pool.filter(i=>!(i in d.placed));
+ const team=TEAMS[d.turn%3];
+ let board="";
+ if(n.mode==="table"){
+  board=`<table class="tbl"><colgroup><col style="width:120px"><col><col></colgroup><thead><tr><th></th><th>برامج النظام</th><th>البرامج التطبيقية</th></tr></thead><tbody>
+   ${n.rows.map((r,ri)=>`<tr><td class="k">${r}</td>${[0,1].map(ci=>{ const it=n.items.findIndex(x=>x.r===ri&&x.c===ci); const got=it in d.placed;
+     return `<td class="cell ${got?"ok":""}" data-drop="cell:${ri}:${ci}">${got?n.items[it].t:""}</td>`;}).join("")}</tr>`).join("")}</tbody></table>`;
+ }
+ const doneNow=dragDone(n);
+ storyEl.innerHTML=`${kickHTML(n)}<h2>${n.title}</h2><div class="scroll"><p class="narr">${n.text}</p>${board}</div>
+  ${doneNow?`<div class="why"><b>اكتملت المهمة:</b> ${n.done} <span class="src">(ص ${n.page})</span></div>`:""}`;
+ bottomEl.innerHTML=`<div class="act">
+   <div class="turn" style="--c:${team.c}">${doneNow?`<b style="color:var(--ok)">✓ اكتملت</b><small>اضغط التالي</small>`:`<small>الدور الآن على</small><b>${team.name}</b><small>اسحب بطاقة واحدة إلى مكانها</small>`}</div>
+   <div class="tray ${n.mode==="table"?"small":""}" id="tray">${remaining.map(i=>`<div class="card" data-i="${i}">${n.items[i].t}</div>`).join("")||'<span style="color:var(--muted)">لا بطاقات متبقية</span>'}</div>
+  </div>`;
+ if(n.mode==="layers") setLabels("drop",Object.fromEntries(Object.keys(d.placed).map(i=>[n.items[i].k,true])));
+ if(n.mode==="sort"){
+  setLabels("names");
+  const sys=Object.keys(d.placed).filter(i=>n.items[i].k==="s").map(i=>n.items[i].t);
+  const app=Object.keys(d.placed).filter(i=>n.items[i].k==="a").map(i=>n.items[i].t);
+  overlay.innerHTML=`<div class="zone" data-drop="zone:s" style="--c:#4aa8ff;top:70px;right:24px"><h5>برامج النظام</h5><div class="got">${sys.map(x=>`<span>${x}</span>`).join("")}</div></div>
+   <div class="zone" data-drop="zone:a" style="--c:#f0b84a;top:70px;left:24px"><h5>البرامج التطبيقية</h5><div class="got">${app.map(x=>`<span>${x}</span>`).join("")}</div></div>`;
+ }
+ if(n.mode==="table"){ setLabels("names"); }
+ bottomEl.querySelectorAll(".card").forEach(el=>startDraggable(el,n));
+}
+function startDraggable(el,n){
+ el.onpointerdown=e=>{
+  e.preventDefault(); const i=+el.dataset.i; el.classList.add("dragging");
+  const g=document.createElement("div"); g.className="ghost"; g.textContent=n.items[i].t; g.style.fontSize=(22*SCALE)+"px"; g.style.padding=`${10*SCALE}px ${18*SCALE}px`; document.body.appendChild(g);
+  let hot=null;
+  const move=ev=>{ g.style.left=ev.clientX+"px"; g.style.top=ev.clientY+"px";
+   const t=dropAt(ev.clientX,ev.clientY); if(hot&&hot!==t) hot.classList.remove("hot"); if(t){t.classList.add("hot");} hot=t; };
+  move(e);
+  const up=ev=>{ removeEventListener("pointermove",move); removeEventListener("pointerup",up); removeEventListener("pointercancel",up);
+   g.remove(); el.classList.remove("dragging"); if(hot) hot.classList.remove("hot");
+   const t=dropAt(ev.clientX,ev.clientY); if(t) tryDrop(n,i,t.dataset.drop); };
+  addEventListener("pointermove",move); addEventListener("pointerup",up); addEventListener("pointercancel",up);
+ };
+}
+function dropAt(x,y){
+ const els=[...document.querySelectorAll("[data-drop]")];
+ return els.find(el=>{const r=el.getBoundingClientRect(); return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom;})||null;
+}
+function tryDrop(n,i,target){
+ const d=dragState(S.node); const k=d.turn%3; const it=n.items[i]; let ok=false;
+ if(n.mode==="layers") ok= target==="layer:"+it.k;
+ if(n.mode==="sort") ok= target==="zone:"+it.k;
+ if(n.mode==="table") ok= target===`cell:${it.r}:${it.c}`;
+ if(ok){ d.placed[i]=k; S.scores[k]+=P_DRAG; S.log.drag[k]++; toast(`✓ ${TEAMS[k].name}: إجابة صحيحة +${P_DRAG}`);
+  if(n.mode==="sort") addIconTo(it.k==="s"?1:2, it.k==="s"?0x4aa8ff:0xf0b84a);
+  if(n.mode==="layers") R.flash&&(R.flash[it.k]=performance.now()+900);
+  renderScores([k]);
+ } else {
+  const hints={layers:"ليست هذه طبقتها. فكّروا: من يعمل فوق من؟",sort:"ليس هذا نوعه. هل يدير الجهاز، أم ينجز مهمة للمستخدم؟",table:"ليست هذه خانتها. تأكدوا من الصف والعمود."};
+  toast(`✗ ${TEAMS[k].name}: ${hints[n.mode]} الدور ينتقل.`);
+ }
+ d.turn++; save(); renderDrag(n); updateNext();
+}
+
+/* ---------- المختبر (مسار الإنقاذ 2) ---------- */
+function renderLab(n){
+ storyEl.innerHTML=`${kickHTML(n)}<h2>${n.title}</h2><div class="scroll"><p class="narr">${n.text}</p></div>
+  ${S.labDone?`<div class="why"><b>من الكتاب:</b> ${n.why} <span class="src">(ص ${n.page})</span></div>`:""}`;
+ const osBack=!!S.labDone;
+ overlay.innerHTML=`<div class="apptap">${[["التذاكر","#f0b84a"],["الخرائط","#3fd08a"],["المترجم","#4aa8ff"]].map(([t,c])=>`<button style="background:${c};color:#06121d" data-app="${t}">${t}</button>`).join("")}</div>`;
+ overlay.querySelectorAll("[data-app]").forEach(b=>b.onclick=()=>{
+  if(!S.labDone) toast(`«${b.dataset.app}» لا يستجيب: لا يوجد نظام تشغيل يوصله بالأجهزة.`);
+  else toast(`«${b.dataset.app}» يعمل الآن: نظام التشغيل يدير الأجهزة ويقدّم خدماته للتطبيق.`);
+ });
+ bottomEl.innerHTML=`<div class="act"><div class="turn" style="--c:var(--gold)"><small>خطوة المختبر</small><b>${osBack?"جرّبوا الآن":"جرّبوا التطبيقات"}</b></div>
+  <div class="tray"><button class="btn gold" id="osRestore" ${osBack?"disabled":""} style="font-size:28px;padding:16px 36px">أعيدوا نظام التشغيل إلى الجوال</button></div></div>`;
+ $("osRestore").onclick=()=>{ S.labDone=true; reaction("osBack"); save(); renderLab(n); updateNext(); };
+ if(osBack){ R.osOffsetT=0; R.screenMode=""; drawScreen("app"); setLabels("names"); }
+}
+
+/* ---------- الختام ---------- */
+function renderEnd(n){
+ const rows=TEAMS.map((t,k)=>`<tr><td style="color:${t.c};font-weight:700">${t.name}</td><td>${S.log.right[k]} / ${S.log.tries[k]}</td><td>${S.log.drag[k]}</td><td style="font-family:var(--display);font-size:30px;color:${t.c}">${S.scores[k]}</td></tr>`).join("");
+ const best=[0,1,2].sort((a,b)=>S.scores[b]-S.scores[a])[0];
+ storyEl.innerHTML=`<div class="kick"><span class="tag">نهاية الجولة الأولى</span></div><h2>${n.title}</h2>
+  <div class="scroll"><p class="narr">${n.text}</p>
+  <table class="sum"><thead><tr><th>الشركة</th><th>قرارات صحيحة</th><th>بطاقات صحيحة</th><th>النقاط</th></tr></thead><tbody>${rows}</tbody></table>
+  <p class="narr" style="color:var(--gold)">${n.exit}</p></div>`;
+ bottomEl.innerHTML=`<div class="teams">${TEAMS.map((t,k)=>`<div class="team" style="--c:${t.c}"><h4>${t.name}<span class="st ${k===best?"ok":""}">${k===best?"🏆 متصدر الجولة":""}</span></h4><div class="cons">${S.scores[k]} نقطة · ${S.log.right[k]} قرارات صحيحة · ${S.log.drag[k]} بطاقات صحيحة</div></div>`).join("")}</div>`;
+}
+
+/* ---------- التنقل والمؤقت ---------- */
+function go(id){ S.hist.push(S.node); S.node=id; render(); }
+$("nextBtn").onclick=()=>{
+ const n=NODES[S.node];
+ if(n.type==="end"){ askReset(); return; }
+ if($("nextBtn").disabled) return;
+ let right=0; if(n.type==="dec"){ const st=decState(S.node); right=st.c.filter(c=>c===n.ans).length; }
+ go(n.next({right}));
+};
+$("prevBtn").onclick=()=>{ if(!S.hist.length) return; S.node=S.hist.pop(); render(); };
+$("revealBtn").onclick=doReveal;
+let resetArmed=false;
+function askReset(){
+ const b=$("resetBtn");
+ if(!resetArmed){ resetArmed=true; b.textContent="اضغط للتأكيد"; b.classList.add("gold"); setTimeout(()=>{resetArmed=false;b.textContent="بداية جديدة";b.classList.remove("gold");},3500); return; }
+ resetArmed=false; S=fresh(); S.labDone=false; b.textContent="بداية جديدة"; b.classList.remove("gold"); render();
+}
+$("resetBtn").onclick=askReset;
+let tId=null,tLeft=0;
+function stopTimer(){ if(tId){clearInterval(tId);tId=null;} }
+$("timerBtn").onclick=()=>{ stopTimer(); tLeft=60; tickT(); tId=setInterval(()=>{tLeft--;tickT();if(tLeft<=0)stopTimer();},1000); };
+function tickT(){ const v=$("timerView"); v.textContent=tLeft>0?`0:${String(tLeft).padStart(2,"0")}`:"انتهى"; v.classList.toggle("low",tLeft<=10); }
+$("explodeBtn").onclick=()=>{ explodeTarget=explodeTarget>0.5?0:1; $("explodeBtn").textContent=explodeTarget>0.5?"اجمع الجوال":"فكّك الجوال"; };
+function updSpin(){ $("spinBtn").textContent=spin?"إيقاف التدوير":"تدوير تلقائي"; }
+$("spinBtn").onclick=()=>{ spin=!spin; updSpin(); };
+document.addEventListener("keydown",e=>{
+ if(e.key==="ArrowLeft") $("nextBtn").click();
+ else if(e.key==="ArrowRight") $("prevBtn").click();
+ else if(e.key===" "){ e.preventDefault(); doReveal(); }
+});
+
+/* تشغيل */
+fit(); init3D(); updSpin(); render();
+</script>
+</body>
+</html>
